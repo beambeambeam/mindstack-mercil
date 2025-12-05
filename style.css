@@ -1,0 +1,738 @@
+/* การตั้งค่าพื้นฐาน: กำหนด Font และลบ Margin เริ่มต้น */
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; /* ใช้ฟอนต์ Sarabun จาก Google Fonts */
+    margin: 0;
+    padding: 0;
+    background-color: #eaf5ec; /* สีพื้นหลังอ่อน ๆ */
+    color: #333;
+}
+a {
+    text-decoration: none; /* ลบขีดเส้นใต้ลิงก์ */
+    color: inherit;
+}
+h1 {
+    font-size: 1.8em;
+    color: #1a4f6d;
+    margin-bottom: 30px;
+    padding-left: 10px;
+}
+.content-container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto; /* จัดกึ่งกลางเนื้อหา */
+    padding-top: 20px;
+}
+
+/* ---------------------------------- */
+/* HEADER & NAVIGATION BAR (ส่วนบนสุด) */
+/* ---------------------------------- */
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 5%; /* Padding ซ้ายขวา 5% */
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #eee;
+}
+.logo {
+    font-size: 2em;
+    font-weight: bold;
+    color: #13a450; /* สีน้ำเงินสำหรับโลโก้ MERCIL */
+}
+.asset-filter-nav {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* ให้เมนูขึ้นบรรทัดใหม่ถ้ายาวเกินไป */
+}
+.nav-link {
+    color: #555;
+    padding: 5px 0;
+    font-size: 0.95em;
+    transition: color 0.2s, border-bottom 0.2s;
+    border-bottom: 3px solid transparent;
+}
+.nav-link:hover {
+    color: #007bff;
+}
+.nav-link.active {
+    color: #007bff;
+    border-bottom: 3px solid #007bff; /* ขีดเส้นใต้สีน้ำเงินสำหรับเมนูที่ถูกเลือก */
+    font-weight: bold;
+}
+
+/* ปุ่มและ Actions */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.action-btn {
+    padding: 8px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+.live-icon {
+    color: #E74C3C; /* สีแดงสำหรับ Live Auction */
+    border: none;
+    background: none;
+    font-weight: bold;
+}
+.login-btn {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+    transition: background-color 0.2s;
+}
+.login-btn:hover {
+    background-color: #0056b3;
+}
+/* ---------------------------------- */
+/* MODAL (Login/Register Pop-up) */
+/* ---------------------------------- */
+
+.modal {
+    display: none; /* ซ่อน Modal ไว้ในตอนแรก */
+    position: fixed; /* ให้อยู่เหนือ Element อื่นๆ */
+    z-index: 2000; /* ค่า z-index สูงเพื่อให้ทับทุกอย่าง */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6); /* พื้นหลังทึบสีดำ */
+    padding-top: 50px; /* ระยะห่างจากด้านบน */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* จัดกึ่งกลางแนวตั้งและแนวนอน */
+    padding: 30px;
+    border: 1px solid #888;
+    width: 90%; /* กว้าง 90% ของหน้าจอ */
+    max-width: 450px; /* จำกัดความกว้างสูงสุด */
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* ---------------------------------- */
+/* AUTH FORM & TABS */
+/* ---------------------------------- */
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #eee;
+}
+
+.auth-tab {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1.1em;
+    color: #555;
+    font-weight: bold;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.auth-tab.active {
+    color: #1a4f6d; /* สีเดียวกับ Header */
+    border-bottom: 3px solid #1a4f6d;
+}
+
+.auth-form {
+    display: none; /* ซ่อนฟอร์มที่ไม่ใช้งาน */
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-form h2 {
+    text-align: center;
+    margin-top: 0;
+    color: #1a4f6d;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.auth-submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff8c00; /* สีส้ม */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+}
+
+.auth-submit-btn:hover {
+    background-color: #e67300;
+}
+
+.forgot-password {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9em;
+    color: #1a4f6d;
+    cursor: pointer;
+}
+
+
+/* ---------------------------------- */
+/* BOTTOM NAVIGATION BAR (เฉพาะสำหรับ Mobile) */
+/* ---------------------------------- */
+.bottom-nav-bar {
+    display: none; /* ซ่อนไว้เป็นค่าเริ่มต้น */
+    
+    position: fixed; /* ให้อยู่คงที่ด้านล่างจอ */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 3000; /* ให้แสดงทับองค์ประกอบอื่น ๆ */
+    
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #555;
+    font-size: 0.8em;
+    padding: 5px;
+    flex-grow: 1; /* ให้แต่ละปุ่มใช้พื้นที่เท่า ๆ กัน */
+    transition: color 0.2s;
+    text-align: center;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: #007bff; /* สีน้ำเงินสำหรับปุ่มที่ถูกเลือก/เมื่อชี้ */
+}
+
+.nav-item .icon {
+    font-size: 1.5em;
+    margin-bottom: 3px;
+}
+
+
+
+
+/* ---------------------------------- */
+/* CHAT SELECTION PAGE STYLES */
+/* ---------------------------------- */
+.chat-options-container {
+    display: flex;
+    gap: 30px; /* ระยะห่างระหว่างกล่อง */
+    padding: 20px 0;
+    justify-content: center;
+}
+
+.chat-option-card {
+    flex: 1;
+    max-width: 450px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 40px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 2px solid #eee;
+}
+
+.chat-option-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.chat-option-card h2 {
+    color: #1a4f6d;
+    font-size: 1.5em;
+    margin-top: 15px;
+}
+
+.chat-option-card .icon {
+    font-size: 3em;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.chat-option-card p {
+    color: #666;
+    margin-bottom: 25px;
+    min-height: 40px; /* ทำให้ความสูงเท่ากัน */
+}
+
+.chat-option-card .action-btn-mini {
+    display: inline-block;
+    background-color: #007bff;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+/* ปรับให้แสดงผลเป็นแนวตั้งบนมือถือ */
+@media (max-width: 768px) {
+    .chat-options-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .chat-option-card {
+        padding: 30px 20px;
+        max-width: 100%;
+    }
+}
+/* ---------------------------------- */
+/* RESPONSIVENESS: แสดง Bottom Nav บนมือถือ */
+/* ---------------------------------- */
+@media (max-width: 768px) {
+    /* แสดง Bottom Nav Bar เมื่อหน้าจอมีขนาดเล็กกว่า 768px */
+    .bottom-nav-bar {
+        display: flex;
+    }
+
+    /* เพิ่ม Padding ให้ Body ด้านล่าง เพื่อไม่ให้เนื้อหาถูกบังโดย Bottom Nav Bar */
+    body {
+        padding-bottom: 70px; /* เพิ่มระยะห่างด้านล่างสำหรับ Bottom Nav Bar */
+    }
+    
+    /* ซ่อน Header Navigation หลักเมื่อเป็นจอเล็ก */
+    .main-header .asset-filter-nav {
+        display: none;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/* ---------------------------------- */
+/* SEARCH PAGE STYLES (สำหรับ search.html) */
+/* ---------------------------------- */
+
+/* จัดกึ่งกลางเนื้อหาในหน้าค้นหา และเพิ่ม Padding ด้านบนให้ห่างขึ้น */
+.content-container {
+    padding-top: 50px;
+    text-align: center; /* ใช้สำหรับจัดกึ่งกลาง <h1> และ .search-bar container */
+}
+
+/* จัดกึ่งกลาง h1 ในหน้าค้นหา */
+.content-container h1 {
+    font-size: 2.2em;
+    color: #1d7874; /* ใช้สีเขียวหลักของคุณ */
+    margin-bottom: 30px;
+    padding-left: 0; /* ลบ padding ด้านซ้ายออก */
+}
+
+/* จัดรูปแบบแถบค้นหา: ให้อยู่ตรงกลางและดูเป็นกล่องเดียว */
+.search-bar {
+    display: flex;
+    justify-content: center; /* จัดกึ่งกลาง Input + Button */
+    margin: 30px auto 50px auto; /* เพิ่มระยะห่างบน/ล่าง */
+    max-width: 600px; /* จำกัดความกว้าง */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* เพิ่มเงาให้ดูเด่น */
+    border-radius: 50px; /* ทำให้ขอบมน */
+    overflow: hidden; /* ซ่อนขอบที่ไม่ต้องการของ Input/Button */
+}
+
+.search-bar input[type="text"] {
+    flex-grow: 1; /* ให้ Input ใช้พื้นที่ส่วนใหญ่ */
+    padding: 15px 20px;
+    border: none;
+    font-size: 1em;
+    outline: none;
+}
+
+.search-bar button {
+    background-color: #1d7874; /* สีเขียว */
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.search-bar button:hover {
+    background-color: #145e58; /* สีเข้มขึ้นเมื่อ Hover */
+}
+
+
+/* ---------------------------------- */
+/* PINTEREST/MODERN ASSET CARD STYLES */
+/* ---------------------------------- */
+
+/* ปรับ asset-grid-wrapper ให้มี padding เล็กน้อย */
+.asset-grid-wrapper {
+    padding: 0 20px;
+}
+
+/* จัดรูปแบบกริดให้สวยงาม (3 คอลัมน์สำหรับเดสก์ท็อป) */
+#asset-card-container {
+    display: grid;
+    /* 3 คอลัมน์สำหรับหน้าจอใหญ่ */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+    gap: 30px; /* เพิ่มระยะห่างระหว่างการ์ด */
+    margin-top: 20px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* จัดรูปแบบการ์ดทรัพย์สินให้ดูนุ่มนวลขึ้น */
+.asset-card {
+    background-color: white;
+    border-radius: 12px; /* ขอบมน */
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* เงาที่ชัดเจนขึ้น */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: left; /* เนื้อหาใน card จัดชิดซ้าย */
+    border: 1px solid #e0e0e0;
+}
+
+.asset-card:hover {
+    transform: translateY(-5px); /* ยกการ์ดขึ้นเล็กน้อยเมื่อชี้ */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ปรับภาพประกอบ */
+.asset-image-placeholder {
+    height: 180px;
+    background-color: #f0f0f0;
+    /* ... เพิ่มสไตล์อื่นๆ ของภาพถ้ามี ... */
+}
+
+/* ปรับรายละเอียดในการ์ด */
+.asset-details {
+    padding: 15px 20px;
+}
+
+.asset-details h3 {
+    font-size: 1.1em;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #333;
+}
+
+.asset-details .price {
+    font-size: 1.5em;
+    color: #d64545; /* สีแดงสำหรับราคา */
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+/* ปรับปุ่ม 'เข้าร่วมประมูล' */
+.asset-details .bid-button {
+    display: block;
+    text-align: center;
+    padding: 10px 15px;
+    background-color: #1d7874; 
+    color: white;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-weight: 700;
+    transition: background-color 0.3s;
+}
+
+/* **สำหรับ Mobile/Tablet View** */
+@media (max-width: 768px) {
+    #asset-card-container {
+        /* 2 คอลัมน์สำหรับหน้าจอขนาดกลาง */
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 15px;
+    }
+    
+    .search-bar {
+        max-width: 90%;
+    }
+    
+    .content-container h1 {
+        font-size: 1.5em;
+    }
+}
+
+
+
+
+
+
+
+
+/* ---------------------------------- */
+/* ASSET GRID & CARD VIEW (ส่วนการ์ดทรัพย์สิน) */
+/* ---------------------------------- */
+.asset-grid-wrapper {
+    padding: 20px 0;
+}
+#asset-card-container {
+    display: grid;
+    /* แสดงผล 4 คอลัมน์สำหรับหน้าจอใหญ่ */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px;
+}
+.asset-card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    background-color: white;
+    transition: transform 0.3s;
+}
+.asset-card:hover {
+    transform: translateY(-5px); /* เลื่อนขึ้นเล็กน้อยเมื่อวางเมาส์ */
+}
+
+/* ส่วนรูปภาพ/สีพื้นหลังของการ์ด */
+.card-image {
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    font-weight: 900;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+
+
+/* ตัวจับเวลา (Timer) */
+.timer-tag {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #E74C3C; /* สีแดงสำหรับเวลา */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* รายละเอียดของการ์ด */
+.card-details {
+    padding: 15px;
+}
+.asset-type-label {
+    font-size: 0.8em;
+    color: #007bff; /* สีเดียวกับปุ่ม Condominium ในรูป */
+    margin-bottom: 5px;
+}
+.card-details h3 {
+    font-size: 1.1em;
+    margin: 5px 0 10px 0;
+    height: 3em; /* กำหนดความสูงเพื่อความสม่ำเสมอ */
+    overflow: hidden;
+}
+.asset-code-text {
+    font-size: 0.8em;
+    color: #777;
+    margin-bottom: 5px;
+}
+.price-value {
+    font-size: 1.4em;
+    color: #E74C3C; /* สีแดงสำหรับราคาประมูล */
+    font-weight: bold;
+    margin: 10px 0 15px 0;
+}
+.bid-button {
+    display: block;
+    text-align: center;
+    background-color: #409329; /* สีส้ม */
+    color: white;
+    padding: 12px;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+.bid-button:hover {
+    background-color: #e67300;
+}
+
+/* ---------------------------------- */
+/* การกำหนดสีตามประเภททรัพย์สิน (จากรูปภาพ) */
+/* ---------------------------------- */
+
+/* ห้องชุดพักอาศัย (Condo) / asset_type_id: 3 */
+.asset-type-3 .card-image {
+    background-color: #2ECC71; /* สีเขียว */
+}
+
+/* บ้านเดี่ยว (House) / asset_type_id: 4 */
+.asset-type-4 .card-image {
+    background-color: #3498DB; /* สีน้ำเงิน */
+}
+
+/* บ้านแฝด (Semi-detached) / asset_type_id: 15 */
+.asset-type-15 .card-image {
+    background-color: #9B59B6; /* สีม่วง */
+}
+
+/* สำหรับ Condo B (สมมติว่าเป็น ID 12 หรือ ID อื่น ๆ) */
+.asset-type-12 .card-image {
+    background-color: #2ECC71; /* สีเขียว (ใช้ซ้ำ) */
+}
+
+/* ---------------------------------- */
+/* RESPONSIVENESS (ปรับตามขนาดหน้าจอ) */
+/* ---------------------------------- */
+@media (max-width: 992px) {
+    #asset-card-container {
+        /* ปรับเป็น 3 คอลัมน์บนแท็บเล็ต */
+        grid-template-columns: repeat(3, 1fr); 
+    }
+}
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .asset-filter-nav {
+        justify-content: center;
+        margin-bottom: 10px;
+    }
+    #asset-card-container {
+        /* ปรับเป็น 2 คอลัมน์บนมือถือ */
+        grid-template-columns: repeat(2, 1fr); 
+    }
+}
+@media (max-width: 576px) {
+    #asset-card-container {
+        /* ปรับเป็น 1 คอลัมน์บนมือถือเล็ก */
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------------------------------- */
+/* LAYOUT ของหน้ารายละเอียด (Detail Page) */
+/* ---------------------------------- */
+
+.detail-grid {
+    display: flex; /* ใช้ Flexbox สำหรับแบ่งคอลัมน์หลัก */
+    gap: 30px; /* ระยะห่างระหว่างคอลัมน์ */
+    margin-top: 20px;
+    align-items: flex-start; /* จัดให้เนื้อหาเริ่มต้นจากด้านบน */
+}
+
+/* คอลัมน์ซ้าย: แผนที่และรูปภาพ */
+.left-column {
+    /* กำหนดให้ Map และ Image Carousel ใช้พื้นที่ 65% */
+    flex: 0 0 65%; 
+    max-width: 65%;
+}
+
+/* คอลัมน์ขวา: ข้อมูลรายละเอียดและกล่องประมูล */
+.right-column {
+    /* กำหนดให้คอลัมน์ข้อมูลใช้พื้นที่ 35% */
+    flex: 0 0 35%;
+    max-width: 35%;
+}
+
+/* สไตล์สำหรับแผนที่ย่อ (Mini Map) */
+#mini-map {
+    height: 450px; /* กำหนดความสูงของแผนที่ให้ชัดเจน */
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+/* ทำให้กล่องประมูลติดขอบบน (Sticky Bidding Box) */
+.bidding-box {
+    position: sticky; 
+    top: 20px; /* กำหนดระยะห่างจากขอบด้านบนของหน้าจอ */
+    z-index: 10;
+    
+    /* สไตล์เพิ่มเติมสำหรับ Bidding Box */
+    background-color: #fffae8; 
+    border: 2px solid #ffcc00;
+    padding: 25px;
+    border-radius: 10px;
+    margin-bottom: 25px; /* เพิ่มระยะห่างด้านล่าง */
+}
+
+/* สไตล์สำหรับส่วนรายละเอียดอื่น ๆ */
+.bidding-info, .property-description {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+/* ---------------------------------- */
+/* RESPONSIVENESS (ปรับเมื่อหน้าจอเล็ก) */
+/* ---------------------------------- */
+@media (max-width: 992px) {
+    .detail-grid {
+        flex-direction: column; /* เปลี่ยนเป็นเรียงคอลัมน์ซ้อนกัน */
+    }
+    .left-column, .right-column {
+        flex: 1 1 100%; /* ใช้พื้นที่เต็มความกว้าง */
+        max-width: 100%;
+    }
+    .bidding-box {
+        position: static; /* ยกเลิก Sticky เมื่ออยู่บนมือถือ/แท็บเล็ต */
+        top: auto;
+    }
+}
