@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend Service
+  api:
+    build: .
+    container_name: mercil-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - OLLAMA_BASE_URL=http://ollama:11434
+    depends_on:
+      - postgres
+      - ollama
+    networks:
+      - mercil-network
+    volumes:
+      - ./app:/app/app  # Mount for hot reload in development
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  # PostgreSQL with PostGIS and pgvector
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: mercil-postgres
+    environment:
+      POSTGRES_DB: mercil_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mercil-network
+    restart: unless-stopped
+
+  # Ollama Service for AI Models
+  ollama:
+    image: ollama/ollama:latest
+    container_name: mercil-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - mercil-network
+    restart: unless-stopped
+    # Pull gemma3:4b model on startup
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        sleep 5
+        ollama pull gemma3:4b
+        wait
+
+  # Optional: PgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mercil-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@mercil.com
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    networks:
+      - mercil-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+    profiles:
+      - dev  # Only start with --profile dev
+
+networks:
+  mercil-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  ollama_data:
+  pgadmin_data:
