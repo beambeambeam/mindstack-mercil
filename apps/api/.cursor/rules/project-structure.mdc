@@ -1,0 +1,119 @@
+---
+alwaysApply: true
+---
+
+# FastAPI Project Structure Rules
+
+## Directory Structure
+
+This project follows the official FastAPI structure for bigger applications as documented at:
+https://fastapi.tiangolo.com/tutorial/bigger-applications/#an-example-file-structure
+
+```
+apps/api/
+├── app/
+│   ├── __init__.py          # Package initialization
+│   ├── main.py              # FastAPI app initialization, middleware, and router includes
+│   ├── routers/             # API route modules
+│   │   ├── __init__.py      # Routers package initialization
+│   │   └── *.py             # Individual router modules (e.g., health.py)
+│   ├── dependencies.py      # Shared dependencies (optional)
+│   └── internal/            # Internal/admin routes (optional)
+│       └── __init__.py
+├── .cursorrules             # This file
+├── package.json             # npm scripts for running the app
+└── pyproject.toml           # Python project configuration
+```
+
+## Rules
+
+### 1. Router Organization
+
+- All API routes MUST be organized in the `app/routers/` directory
+- Each router module should define an `APIRouter` instance named `router`
+- Use descriptive prefixes and tags for each router
+- Example: `app/routers/health.py` with `router = APIRouter(prefix="/health", tags=["health"])`
+
+### 2. Main Application File
+
+- `app/main.py` is the entry point for the FastAPI application
+- It should only contain:
+  - FastAPI app initialization
+  - Middleware configuration (CORS, logging, etc.)
+  - Router includes using `app.include_router()`
+  - Lifespan events (startup/shutdown)
+  - Root-level endpoints (if any)
+
+### 3. Router Imports
+
+- Use relative imports within the `app` package: `from .routers import health`
+- Import the router module, not just the router object, to avoid name collisions
+- Include routers in `main.py` using: `app.include_router(health.router)`
+
+### 4. Adding New Routes
+
+- Create a new file in `app/routers/` (e.g., `app/routers/users.py`)
+- Define an `APIRouter` with appropriate prefix and tags
+- Import and include it in `app/main.py`
+- Follow the existing pattern for consistency
+
+### 5. Dependencies
+
+- Shared dependencies should go in `app/dependencies.py`
+- Router-specific dependencies can be defined in the router file or passed to `include_router()`
+
+### 6. Internal/Admin Routes
+
+- Internal or admin-only routes should go in `app/internal/` directory
+- These can be included with additional security dependencies and prefixes
+
+### 7. Running the Application
+
+- Development: `npm run dev` or `uv run python -m uvicorn app.main:app --reload`
+- Production: `npm run start` or `uv run python -m uvicorn app.main:app`
+- Always use `app.main:app` as the module path (not `main:app`)
+
+### 8. Logging
+
+- Use the logger from `logging.getLogger(__name__)` in each module
+- Logging is configured in `app/main.py` at the application level
+- Use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
+### 9. Code Organization
+
+- Keep route handlers focused and single-purpose
+- Extract business logic to service modules if needed (create `app/services/` if necessary)
+- Keep models/schemas organized (create `app/schemas/` if needed)
+- Keep database models organized (create `app/models/` if needed)
+
+### 10. File Naming
+
+- Router files should be named descriptively (e.g., `health.py`, `users.py`, `items.py`)
+- Use lowercase with underscores for Python files
+- Each router file should contain related endpoints
+
+## Example Router Structure
+
+```python
+# app/routers/health.py
+import logging
+from fastapi import APIRouter
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(
+    prefix="/health",
+    tags=["health"],
+)
+
+@router.get("")
+async def health_check():
+    """Health check endpoint."""
+    logger.debug("Health check endpoint accessed")
+    return {"status": "healthy"}
+```
+
+## Reference
+
+- FastAPI Bigger Applications: https://fastapi.tiangolo.com/tutorial/bigger-applications/
+- FastAPI APIRouter: https://fastapi.tiangolo.com/tutorial/bigger-applications/#apirouter

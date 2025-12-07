@@ -1,7 +1,7 @@
 """
 Main FastAPI application file.
 This file initializes the FastAPI app, sets up logging,
-CORS middleware, and defines the API endpoints.
+CORS middleware, and includes API routers.
 """
 
 import logging
@@ -12,6 +12,8 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+from .routers import health
 
 # Configure logging
 logging.basicConfig(
@@ -97,18 +99,15 @@ async def log_requests(request: Request, call_next):
         raise
 
 
+# Include routers
+app.include_router(health.router)
+
+
 @app.get("/")
 async def read_root():
     """Root endpoint."""
     logger.info("Root endpoint accessed")
     return {"message": "Hello, World!", "status": "ok"}
-
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    logger.debug("Health check endpoint accessed")
-    return {"status": "healthy"}
 
 
 if __name__ == "__main__":
