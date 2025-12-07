@@ -14,6 +14,8 @@ importers:
 
   apps/api: {}
 
+  apps/web: {}
+
 packages:
 
   turbo-darwin-64@2.6.3:

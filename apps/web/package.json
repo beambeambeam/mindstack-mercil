@@ -1,0 +1,8 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npx serve -l 3001",
+    "start": "npx serve -l 3001"
+  }
+}
