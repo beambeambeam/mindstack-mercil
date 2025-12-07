@@ -1,0 +1,184 @@
+# FastAPI Logging Best Practices
+
+## Overview
+
+This project follows FastAPI logging best practices for production-ready applications. All logging is centralized and configurable through environment variables.
+
+## Key Principles
+
+1. **Never use `print()` statements** - Always use the logging module
+2. **Use structured logging** - JSON format for production, standard format for development
+3. **Log rotation** - Prevent log files from consuming excessive disk space
+4. **Centralized configuration** - All logging setup in `app/core/logging_config.py`
+5. **Module-based loggers** - Use `get_logger(__name__)` for proper logger naming
+6. **Avoid sensitive data** - Never log passwords, tokens, or personal information
+7. **Appropriate log levels** - Use DEBUG, INFO, WARNING, ERROR, CRITICAL appropriately
+
+## Logger Usage
+
+### Getting a Logger
+
+Always use the centralized `get_logger()` function:
+
+```python
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
+```
+
+### Log Levels
+
+- **DEBUG**: Detailed information for diagnosing problems
+- **INFO**: General informational messages (request/response logging)
+- **WARNING**: Warning messages for potential issues
+- **ERROR**: Error messages for exceptions and failures
+- **CRITICAL**: Critical errors that may cause the application to stop
+
+### Logging Examples
+
+```python
+# Simple log message
+logger.info("User logged in successfully")
+
+# Log with extra context (for structured logging)
+logger.info(
+    "Request processed",
+    extra={
+        "user_id": user_id,
+        "action": "login",
+        "duration_ms": 150,
+    }
+)
+
+# Log exceptions
+try:
+    result = risky_operation()
+except Exception as e:
+    logger.error(
+        "Operation failed",
+        extra={"operation": "risky_operation", "error": str(e)},
+        exc_info=True  # Include full traceback
+    )
+```
+
+## Configuration
+
+Logging is configured through environment variables in `.env`:
+
+```env
+# Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_LEVEL=INFO
+
+# Log format: "standard" (human-readable) or "json" (structured)
+LOG_FORMAT=standard
+
+# Optional: Log file path (if not set, logs only to console)
+LOG_FILE=logs/app.log
+
+# Log rotation: "size" or "time"
+LOG_ROTATION=size
+
+# For size-based rotation
+LOG_MAX_BYTES=10485760  # 10MB
+LOG_BACKUP_COUNT=5
+
+# For time-based rotation
+LOG_WHEN=midnight  # midnight, H, M, S, W0-W6
+LOG_INTERVAL=1
+```
+
+## Request Logging Middleware
+
+The application includes automatic request/response logging middleware that logs:
+- HTTP method and path
+- Query parameters
+- Client IP address
+- User agent
+- Response status code
+- Processing time
+- Errors with full tracebacks
+
+This middleware is configured in `app/main.py` and requires no additional setup.
+
+## Structured Logging (JSON Format)
+
+When `LOG_FORMAT=json`, logs are output as JSON for easy parsing by log aggregation tools:
+
+```json
+{
+  "timestamp": "2024-01-01 12:00:00",
+  "level": "INFO",
+  "logger": "app.main",
+  "message": "Request completed",
+  "module": "main",
+  "function": "log_requests",
+  "line": 85,
+  "method": "GET",
+  "path": "/health",
+  "status_code": 200,
+  "process_time": 0.0023
+}
+```
+
+## Best Practices
+
+### DO
+
+- ✅ Use `get_logger(__name__)` for module-specific loggers
+- ✅ Include relevant context in log messages using `extra` parameter
+- ✅ Use appropriate log levels
+- ✅ Log exceptions with `exc_info=True`
+- ✅ Use structured logging in production
+- ✅ Include request IDs or correlation IDs for tracing
+
+### DON'T
+
+- ❌ Never use `print()` for logging
+- ❌ Don't log sensitive information (passwords, tokens, PII)
+- ❌ Don't log at DEBUG level in production
+- ❌ Don't create multiple logging configurations
+- ❌ Don't log entire request/response bodies (can be huge)
+- ❌ Don't use string formatting in log messages (use `extra` for structured logging)
+
+## Log Rotation
+
+### Size-based Rotation
+
+When `LOG_ROTATION=size`, logs are rotated when they reach `LOG_MAX_BYTES`:
+- Old logs are renamed with `.1`, `.2`, etc. extensions
+- Maximum `LOG_BACKUP_COUNT` backup files are kept
+- Example: `app.log`, `app.log.1`, `app.log.2`, etc.
+
+### Time-based Rotation
+
+When `LOG_ROTATION=time`, logs are rotated based on time intervals:
+- `LOG_WHEN`: When to rotate (midnight, H, M, S, W0-W6)
+- `LOG_INTERVAL`: How often to rotate
+- Old logs are renamed with timestamps
+- Example: `app.log.2024-01-01`, `app.log.2024-01-02`, etc.
+
+## Integration with Monitoring Tools
+
+Structured JSON logs can be easily integrated with:
+- **ELK Stack** (Elasticsearch, Logstash, Kibana)
+- **Loki** (Grafana Loki)
+- **CloudWatch** (AWS)
+- **Datadog**
+- **Splunk**
+- **Better Stack**
+
+## Performance Considerations
+
+- Logging to files is buffered by default
+- Console logging has minimal performance impact
+- Avoid logging in tight loops
+- Use appropriate log levels to reduce log volume in production
+- Consider async logging handlers for high-throughput applications
+
+## Uvicorn Logging
+
+Uvicorn's own logging is configured to WARNING level to reduce noise:
+- `uvicorn` logger: WARNING
+- `uvicorn.access` logger: WARNING (access logs disabled by default)
+
+Access logging is handled by our custom middleware for better control and formatting.

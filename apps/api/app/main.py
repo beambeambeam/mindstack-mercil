@@ -5,7 +5,6 @@ CORS middleware, and includes API routers.
 """
 
 import logging
-import sys
 import time
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
@@ -14,19 +13,13 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
+from .core.config.logging import get_logger, setup_logging
 from .routers import health
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-    ],
-)
+# Setup logging configuration
+setup_logging()
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @asynccontextmanager
@@ -40,9 +33,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 # Initialize FastAPI app
 app = FastAPI(
     title="API Service",
-    description="FastAPI service with logging",
+    description="FastAPI service with logging and Swagger documentation",
     version="1.0.0",
     lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json",
 )
 
 # CORS Middleware
@@ -58,15 +54,18 @@ app.add_middleware(
 # Request logging middleware
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """Middleware to log all HTTP requests."""
+    """Middleware to log all HTTP requests with detailed information."""
     start_time = time.time()
+    client_ip = request.client.host if request.client else "unknown"
 
     logger.info(
-        f"Request started: {request.method} {request.url.path}",
+        "Request started",
         extra={
             "method": request.method,
             "path": request.url.path,
-            "query_params": str(request.query_params),
+            "query_params": dict(request.query_params),
+            "client_ip": client_ip,
+            "user_agent": request.headers.get("user-agent"),
         },
     )
 
@@ -75,12 +74,13 @@ async def log_requests(request: Request, call_next):
         process_time = time.time() - start_time
 
         logger.info(
-            f"Request completed: {request.method} {request.url.path} - Status: {response.status_code} - Time: {process_time:.3f}s",
+            "Request completed",
             extra={
                 "method": request.method,
                 "path": request.url.path,
                 "status_code": response.status_code,
-                "process_time": process_time,
+                "process_time": round(process_time, 4),
+                "client_ip": client_ip,
             },
         )
 
@@ -88,12 +88,14 @@ async def log_requests(request: Request, call_next):
     except Exception as e:
         process_time = time.time() - start_time
         logger.error(
-            f"Request failed: {request.method} {request.url.path} - Error: {str(e)} - Time: {process_time:.3f}s",
+            "Request failed",
             extra={
                 "method": request.method,
                 "path": request.url.path,
                 "error": str(e),
-                "process_time": process_time,
+                "error_type": type(e).__name__,
+                "process_time": round(process_time, 4),
+                "client_ip": client_ip,
             },
             exc_info=True,
         )

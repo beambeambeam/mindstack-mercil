@@ -1,10 +1,9 @@
 """Health check router."""
 
-import logging
-
+from app.core.config.logging import get_logger
 from fastapi import APIRouter
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 router = APIRouter(
     prefix="/health",
