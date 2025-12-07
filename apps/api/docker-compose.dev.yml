@@ -1,6 +1,8 @@
 services:
   postgres:
-    image: ankane/pgvector:latest
+    build:
+      context: .
+      dockerfile: docker/postgres.Dockerfile
     container_name: mercil-postgres-dev
     environment:
       POSTGRES_DB: mindstack_mercil_db
