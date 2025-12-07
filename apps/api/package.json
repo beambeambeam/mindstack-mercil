@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "main": "hello.js",
+  "scripts": {
+    "dev": "node hello.js",
+    "start": "node hello.js"
+  }
+}

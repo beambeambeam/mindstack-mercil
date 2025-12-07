@@ -90,3 +90,6 @@ dmypy.json
 
 # Profiling
 *.prof
+
+# Turborepo
+.turbo
