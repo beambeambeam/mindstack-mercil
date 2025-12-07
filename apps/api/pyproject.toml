@@ -3,4 +3,7 @@ name = "api"
 version = "1.0.0"
 description = "API service"
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+]
