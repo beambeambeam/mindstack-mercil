@@ -13,6 +13,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from .core.config import settings
 from .routers import health
 
 # Configure logging
@@ -47,7 +48,7 @@ app = FastAPI(
 # CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -116,8 +117,8 @@ if __name__ == "__main__":
     logger.info("Starting uvicorn server...")
     uvicorn.run(
         app,
-        host="0.0.0.0",
-        port=8000,
+        host=settings.host,
+        port=settings.port,
         reload=False,
         log_level="info",
     )
