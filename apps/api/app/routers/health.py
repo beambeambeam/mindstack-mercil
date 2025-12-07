@@ -10,6 +10,12 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.core.config import settings
 from app.core.config.logging import get_logger
+from app.schemas.health import (
+    ApiStatus,
+    DetailedHealthCheckResponse,
+    HealthCheckResponse,
+    ServiceStatus,
+)
 
 logger = get_logger(__name__)
 
@@ -19,14 +25,14 @@ router = APIRouter(
 )
 
 
-async def check_database() -> dict[str, str | float]:
+async def check_database() -> ServiceStatus:
     """Check PostgreSQL database connection."""
     if not settings.DATABASE_URL:
-        return {
-            "status": "unhealthy",
-            "error": "DATABASE_URL not configured",
-            "response_time_ms": 0.0,
-        }
+        return ServiceStatus(
+            status="unhealthy",
+            error="DATABASE_URL not configured",
+            response_time_ms=0.0,
+        )
 
     start_time = time.time()
     try:
@@ -34,29 +40,29 @@ async def check_database() -> dict[str, str | float]:
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
         response_time = (time.time() - start_time) * 1000
-        return {
-            "status": "healthy",
-            "response_time_ms": round(response_time, 2),
-        }
+        return ServiceStatus(
+            status="healthy",
+            response_time_ms=round(response_time, 2),
+        )
     except SQLAlchemyError as e:
         response_time = (time.time() - start_time) * 1000
         logger.error(f"Database health check failed: {e}")
-        return {
-            "status": "unhealthy",
-            "error": str(e),
-            "response_time_ms": round(response_time, 2),
-        }
+        return ServiceStatus(
+            status="unhealthy",
+            error=str(e),
+            response_time_ms=round(response_time, 2),
+        )
     except Exception as e:
         response_time = (time.time() - start_time) * 1000
         logger.error(f"Database health check unexpected error: {e}")
-        return {
-            "status": "unhealthy",
-            "error": f"Unexpected error: {str(e)}",
-            "response_time_ms": round(response_time, 2),
-        }
+        return ServiceStatus(
+            status="unhealthy",
+            error=f"Unexpected error: {str(e)}",
+            response_time_ms=round(response_time, 2),
+        )
 
 
-async def check_ollama() -> dict[str, str | float]:
+async def check_ollama() -> ServiceStatus:
     """Check Ollama service connection."""
     start_time = time.time()
     try:
@@ -65,90 +71,116 @@ async def check_ollama() -> dict[str, str | float]:
             response_time = (time.time() - start_time) * 1000
 
             if response.status_code == 200:
-                return {
-                    "status": "healthy",
-                    "response_time_ms": round(response_time, 2),
-                }
-            return {
-                "status": "unhealthy",
-                "error": f"HTTP {response.status_code}",
-                "response_time_ms": round(response_time, 2),
-            }
+                return ServiceStatus(
+                    status="healthy",
+                    response_time_ms=round(response_time, 2),
+                )
+            return ServiceStatus(
+                status="unhealthy",
+                error=f"HTTP {response.status_code}",
+                response_time_ms=round(response_time, 2),
+            )
     except httpx.TimeoutException:
         response_time = (time.time() - start_time) * 1000
         logger.error("Ollama health check timeout")
-        return {
-            "status": "unhealthy",
-            "error": "Connection timeout",
-            "response_time_ms": round(response_time, 2),
-        }
+        return ServiceStatus(
+            status="unhealthy",
+            error="Connection timeout",
+            response_time_ms=round(response_time, 2),
+        )
     except httpx.ConnectError as e:
         response_time = (time.time() - start_time) * 1000
         logger.error(f"Ollama health check connection error: {e}")
-        return {
-            "status": "unhealthy",
-            "error": f"Connection failed: {str(e)}",
-            "response_time_ms": round(response_time, 2),
-        }
+        return ServiceStatus(
+            status="unhealthy",
+            error=f"Connection failed: {str(e)}",
+            response_time_ms=round(response_time, 2),
+        )
     except Exception as e:
         response_time = (time.time() - start_time) * 1000
         logger.error(f"Ollama health check unexpected error: {e}")
-        return {
-            "status": "unhealthy",
-            "error": f"Unexpected error: {str(e)}",
-            "response_time_ms": round(response_time, 2),
-        }
+        return ServiceStatus(
+            status="unhealthy",
+            error=f"Unexpected error: {str(e)}",
+            response_time_ms=round(response_time, 2),
+        )
 
 
-@router.get("")
-async def health_check():
+@router.get("", response_model=HealthCheckResponse)
+async def health_check() -> HealthCheckResponse:
     """Basic health check endpoint - checks if API is running."""
     logger.debug("Health check endpoint accessed")
-    return {
-        "status": "healthy",
-        "service": "api",
-        "timestamp": time.time(),
-    }
+    return HealthCheckResponse(
+        status="healthy",
+        service="api",
+        timestamp=time.time(),
+    )
 
 
-@router.get("/detailed")
-async def detailed_health_check():
+@router.get(
+    "/detailed",
+    response_model=DetailedHealthCheckResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        503: {
+            "description": "Service Unavailable - One or more services are unhealthy",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "status": "unhealthy",
+                        "timestamp": 1234567890.0,
+                        "services": {
+                            "api": {"status": "healthy", "service": "api"},
+                            "database": {
+                                "status": "unhealthy",
+                                "error": "Connection failed",
+                                "response_time_ms": 50.0,
+                            },
+                            "ollama": {
+                                "status": "unhealthy",
+                                "error": "Connection timeout",
+                                "response_time_ms": 5000.0,
+                            },
+                        },
+                    }
+                }
+            },
+        }
+    },
+)
+async def detailed_health_check() -> DetailedHealthCheckResponse:
     """Detailed health check endpoint - checks API, database, and Ollama."""
     logger.debug("Detailed health check endpoint accessed")
 
-    api_status = {
-        "status": "healthy",
-        "service": "api",
-    }
-
+    api_status = ApiStatus(status="healthy", service="api")
     db_status = await check_database()
     ollama_status = await check_ollama()
 
     overall_status: Literal["healthy", "degraded", "unhealthy"] = "healthy"
     unhealthy_count = sum(
         1
-        for status in [db_status["status"], ollama_status["status"]]
-        if status == "unhealthy"
+        for service_status in [db_status, ollama_status]
+        if service_status.status == "unhealthy"
     )
     if unhealthy_count == 2:
         overall_status = "unhealthy"
     elif unhealthy_count == 1:
         overall_status = "degraded"
 
-    health_response = {
-        "status": overall_status,
-        "timestamp": time.time(),
-        "services": {
+    health_response = DetailedHealthCheckResponse(
+        status=overall_status,
+        timestamp=time.time(),
+        services={
             "api": api_status,
             "database": db_status,
             "ollama": ollama_status,
         },
-    }
+    )
 
     if overall_status == "unhealthy":
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=health_response,
+            detail=health_response.model_dump(),
         )
 
     return health_response

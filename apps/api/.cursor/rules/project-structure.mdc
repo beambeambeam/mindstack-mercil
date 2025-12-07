@@ -17,6 +17,18 @@ apps/api/
 │   ├── routers/             # API route modules
 │   │   ├── __init__.py      # Routers package initialization
 │   │   └── *.py             # Individual router modules (e.g., health.py)
+│   ├── schemas/             # Pydantic models for request/response validation
+│   │   ├── __init__.py      # Schemas package initialization
+│   │   └── *.py             # Schema modules organized by domain (e.g., health.py, user.py)
+│   ├── models/              # Database models (SQLModel/SQLAlchemy) - optional
+│   │   ├── __init__.py      # Models package initialization
+│   │   └── *.py             # Database model modules
+│   ├── services/            # Business logic layer - optional
+│   │   ├── __init__.py      # Services package initialization
+│   │   └── *.py             # Service modules
+│   ├── core/                # Core configuration and utilities
+│   │   ├── config/          # Configuration settings
+│   │   └── *.py             # Core utilities
 │   ├── dependencies.py      # Shared dependencies (optional)
 │   └── internal/            # Internal/admin routes (optional)
 │       └── __init__.py
@@ -79,12 +91,45 @@ apps/api/
 - Logging is configured in `app/main.py` at the application level
 - Use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
 
-### 9. Code Organization
+### 9. Schemas (Pydantic Models)
+
+- **Location**: All Pydantic models MUST be in `app/schemas/` directory
+- **Organization**: Organize schemas by domain/resource (e.g., `health.py`, `user.py`, `item.py`)
+- **Naming**: Use descriptive names ending with appropriate suffixes:
+  - Request models: `*Request`, `*Create`, `*Update` (e.g., `UserCreate`, `UserUpdate`)
+  - Response models: `*Response` (e.g., `UserResponse`, `HealthCheckResponse`)
+  - Shared models: Descriptive names (e.g., `ServiceStatus`, `ApiStatus`)
+- **Usage**: Always use `response_model` parameter in route decorators for proper Swagger documentation
+- **Example**:
+  ```python
+  from app.schemas.health import HealthCheckResponse
+  
+  @router.get("", response_model=HealthCheckResponse)
+  async def health_check() -> HealthCheckResponse:
+      return HealthCheckResponse(...)
+  ```
+
+### 10. Database Models
+
+- **Location**: Database models (SQLModel/SQLAlchemy) should be in `app/models/` directory
+- **Organization**: Organize by domain/resource, similar to schemas
+- **Separation**: Keep database models separate from Pydantic schemas
+  - `app/models/` = Database ORM models
+  - `app/schemas/` = API request/response validation models
+
+### 11. Services (Business Logic)
+
+- **Location**: Business logic should be in `app/services/` directory
+- **Purpose**: Extract complex business logic from route handlers
+- **Organization**: One service module per domain/resource
+- **Usage**: Route handlers should call service functions, not contain business logic directly
+
+### 12. Code Organization
 
 - Keep route handlers focused and single-purpose
 - Extract business logic to service modules if needed (create `app/services/` if necessary)
-- Keep models/schemas organized (create `app/schemas/` if needed)
-- Keep database models organized (create `app/models/` if needed)
+- Always define response models in `app/schemas/` and use `response_model` in route decorators
+- Keep database models in `app/models/` separate from API schemas
 
 ### 10. File Naming
 
