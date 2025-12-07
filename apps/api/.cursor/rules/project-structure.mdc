@@ -109,13 +109,13 @@ apps/api/
       return HealthCheckResponse(...)
   ```
 
-### 10. Database Models
+### 10. Database
 
-- **Location**: Database models (SQLModel/SQLAlchemy) should be in `app/models/` directory
-- **Organization**: Organize by domain/resource, similar to schemas
-- **Separation**: Keep database models separate from Pydantic schemas
-  - `app/models/` = Database ORM models
-  - `app/schemas/` = API request/response validation models
+- See `db.mdc` for complete database rules including:
+  - Database models (SQLModel/SQLAlchemy)
+  - Database connection and session management
+  - Alembic migrations
+  - PostgreSQL extensions (pgvector, PostGIS)
 
 ### 11. Services (Business Logic)
 
@@ -131,7 +131,7 @@ apps/api/
 - Always define response models in `app/schemas/` and use `response_model` in route decorators
 - Keep database models in `app/models/` separate from API schemas
 
-### 10. File Naming
+### 13. File Naming
 
 - Router files should be named descriptively (e.g., `health.py`, `users.py`, `items.py`)
 - Use lowercase with underscores for Python files
