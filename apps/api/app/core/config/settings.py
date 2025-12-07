@@ -16,6 +16,12 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
+    # Database Configuration
+    DATABASE_URL: str | None = None
+
+    # Ollama Configuration
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+
     # Logging Configuration
     log_level: str = "INFO"
     log_format: str = "standard"
