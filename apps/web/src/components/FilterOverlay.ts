@@ -47,11 +47,6 @@ export function createFilterOverlay(
 	overlayElement.className = filterOverlayStyles.overlay;
 	overlayElement.id = "filter-overlay";
 
-	const header = document.querySelector(".main-header");
-	const headerHeight = header ? header.getBoundingClientRect().height : 0;
-
-	overlayElement.style.top = `${headerHeight}px`;
-
 	const filterPanel = document.createElement("div");
 	filterPanel.className = filterOverlayStyles.filterPanel;
 	filterPanelElement = filterPanel;
@@ -287,11 +282,8 @@ export function openFilterOverlay(): void {
 	}
 	if (!overlayElement) return;
 
-	const header = document.querySelector(".main-header");
-	const headerHeight = header ? header.getBoundingClientRect().height : 0;
-	overlayElement.style.top = `${headerHeight}px`;
-
 	overlayElement.classList.add(filterOverlayStyles.overlayVisible);
+	document.body.style.overflow = "hidden";
 
 	if (inputElement) {
 		inputElement.classList.add(headerStyles.inputHighlighted);
@@ -304,7 +296,7 @@ export function openFilterOverlay(): void {
 export function closeFilterOverlay(): void {
 	if (!overlayElement) return;
 	overlayElement.classList.remove(filterOverlayStyles.overlayVisible);
-
+	document.body.style.overflow = "";
 	if (inputElement) {
 		inputElement.classList.remove(headerStyles.inputHighlighted);
 	}
