@@ -1,3 +1,4 @@
+import { env } from "../env";
 import type {
 	Asset,
 	AssetListResponse,
@@ -5,12 +6,13 @@ import type {
 	SearchResponse,
 } from "../types/asset";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_URL = env.VITE_API_URL;
 
 export async function searchAssets(
 	request: SearchRequest,
 ): Promise<SearchResponse> {
-	const response = await fetch(`${API_URL}/search`, {
+	const url = `${API_URL}/search`;
+	const response = await fetch(url, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -19,35 +21,84 @@ export async function searchAssets(
 	});
 
 	if (!response.ok) {
-		throw new Error(`API Error: ${response.status} ${response.statusText}`);
+		const text = await response.text();
+		console.error(
+			`API Error ${response.status} ${response.statusText} from ${url}`,
+		);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+		);
 	}
 
-	return response.json();
+	return parseJsonResponse<SearchResponse>(response, url);
+}
+
+async function parseJsonResponse<T>(
+	response: Response,
+	url: string,
+): Promise<T> {
+	const contentType = response.headers.get("content-type");
+	if (!contentType || !contentType.includes("application/json")) {
+		const text = await response.text();
+		console.error(`Expected JSON but got ${contentType} from ${url}`);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`API returned non-JSON response. Expected JSON but got ${contentType}. Check if the API server is running at ${url}`,
+		);
+	}
+
+	try {
+		return await response.json();
+	} catch (error) {
+		const text = await response.text();
+		console.error(`Failed to parse JSON from ${url}:`, error);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`Failed to parse JSON response from ${url}. Response may be HTML error page. ${error instanceof Error ? error.message : String(error)}`,
+		);
+	}
 }
 
 export async function getAllAssets(
 	page: number = 1,
 	pageSize: number = 200,
 ): Promise<AssetListResponse> {
-	const response = await fetch(
-		`${API_URL}/assets?page=${page}&page_size=${pageSize}`,
-	);
+	const url = `${API_URL}/assets?page=${page}&page_size=${pageSize}`;
+	console.log(`Fetching assets from: ${url}`);
+
+	const response = await fetch(url);
 
 	if (!response.ok) {
-		throw new Error(`API Error: ${response.status} ${response.statusText}`);
+		const text = await response.text();
+		console.error(
+			`API Error ${response.status} ${response.statusText} from ${url}`,
+		);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+		);
 	}
 
-	return response.json();
+	return parseJsonResponse<AssetListResponse>(response, url);
 }
 
 export async function getAssetById(assetId: number): Promise<Asset> {
-	const response = await fetch(`${API_URL}/assets/${assetId}`);
+	const url = `${API_URL}/assets/${assetId}`;
+	const response = await fetch(url);
 
 	if (!response.ok) {
-		throw new Error(`API Error: ${response.status} ${response.statusText}`);
+		const text = await response.text();
+		console.error(
+			`API Error ${response.status} ${response.statusText} from ${url}`,
+		);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+		);
 	}
 
-	return response.json();
+	return parseJsonResponse<Asset>(response, url);
 }
 
 export async function getAssetByCode(assetCode: string): Promise<Asset> {

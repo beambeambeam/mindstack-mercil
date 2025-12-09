@@ -1,5 +1,6 @@
 import { renderAssetCards } from "../../src/components/AssetCard";
 import { initMap } from "../../src/components/Map";
+import { env } from "../../src/env";
 import { getAllAssets } from "../../src/services/api";
 import headerStyles from "../../src/styles/modules/header.module.css";
 import type { Asset, AssetType } from "../../src/types/asset";
@@ -20,9 +21,24 @@ const dummyAssetTypes: AssetType[] = [
 export async function init() {
 	console.log("Index page initialized");
 
-	const response = await getAllAssets(1, 200);
-	allAssets = response.items;
-	assetTypes = dummyAssetTypes;
+	try {
+		const response = await getAllAssets(1, 200);
+		allAssets = response.items;
+		assetTypes = dummyAssetTypes;
+	} catch (error) {
+		console.error("Failed to load assets:", error);
+		const container = document.getElementById("asset-card-container");
+		if (container) {
+			container.innerHTML = `
+				<div style="text-align: center; padding: 50px; color: #d64545;">
+					<h2>ไม่สามารถเชื่อมต่อกับ API ได้</h2>
+					<p>กรุณาตรวจสอบว่า API server กำลังทำงานอยู่ที่ ${env.VITE_API_URL}</p>
+					<p style="font-size: 0.9em; color: #666; margin-top: 10px;">Error: ${error instanceof Error ? error.message : String(error)}</p>
+				</div>
+			`;
+		}
+		return;
+	}
 
 	const container = document.getElementById("asset-card-container");
 	if (container) {
