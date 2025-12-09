@@ -1,0 +1,117 @@
+.overlay {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 1500;
+	display: none;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
+
+.overlayVisible {
+	display: block;
+	opacity: 1;
+}
+
+.filterPanel {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	background-color: white;
+	padding: 30px 5%;
+	max-height: 80vh;
+	overflow-y: auto;
+	box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.filterSection {
+	margin-bottom: 30px;
+}
+
+.filterSection:last-child {
+	margin-bottom: 0;
+}
+
+.filterLabel {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-bottom: 15px;
+	color: #333;
+}
+
+.filterOptions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.filterOption {
+	padding: 10px 20px;
+	border: 2px solid #ddd;
+	border-radius: 6px;
+	background-color: white;
+	color: #555;
+	cursor: pointer;
+	font-size: 0.95em;
+	transition: all 0.2s;
+}
+
+.filterOption:hover {
+	border-color: #007bff;
+	color: #007bff;
+}
+
+.filterOptionActive {
+	background-color: #007bff;
+	color: white;
+	border-color: #007bff;
+	font-weight: bold;
+}
+
+.priceInputs {
+	display: flex;
+	gap: 15px;
+}
+
+.priceInput,
+.numberInput {
+	padding: 10px 15px;
+	border: 2px solid #ddd;
+	border-radius: 6px;
+	font-size: 1em;
+	width: 100%;
+	transition: border-color 0.2s;
+}
+
+.priceInput:focus,
+.numberInput:focus {
+	outline: none;
+	border-color: #007bff;
+}
+
+.priceInputs .priceInput {
+	flex: 1;
+}
+
+@media (max-width: 768px) {
+	.filterPanel {
+		padding: 20px 5%;
+	}
+
+	.filterOptions {
+		gap: 8px;
+	}
+
+	.filterOption {
+		padding: 8px 16px;
+		font-size: 0.9em;
+	}
+
+	.priceInputs {
+		flex-direction: column;
+		gap: 10px;
+	}
+}

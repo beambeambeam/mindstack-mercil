@@ -16,8 +16,40 @@ a {
 h1 {
 	font-size: 1.8em;
 	color: #1a4f6d;
+	margin-bottom: 20px;
+	padding-left: 10px;
+}
+
+.property-type-tabs {
+	display: flex;
+	gap: 15px;
+	flex-wrap: wrap;
 	margin-bottom: 30px;
 	padding-left: 10px;
+}
+
+.property-type-tab {
+	padding: 8px 20px;
+	border: 2px solid #ddd;
+	border-radius: 6px;
+	background-color: white;
+	color: #555;
+	cursor: pointer;
+	font-size: 0.95em;
+	transition: all 0.2s;
+	font-family: inherit;
+}
+
+.property-type-tab:hover {
+	border-color: #007bff;
+	color: #007bff;
+}
+
+.property-type-tab.active {
+	background-color: #007bff;
+	color: white;
+	border-color: #007bff;
+	font-weight: bold;
 }
 
 .content-container {

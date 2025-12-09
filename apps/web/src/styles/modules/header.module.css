@@ -20,6 +20,33 @@
 	flex-wrap: wrap;
 }
 
+.filterInput {
+	padding: 8px 15px;
+	border: 2px solid #ddd;
+	border-radius: 6px;
+	font-size: 0.95em;
+	color: #555;
+	background-color: white;
+	cursor: pointer;
+	transition: all 0.2s;
+	min-width: 200px;
+}
+
+.filterInput:hover {
+	border-color: #007bff;
+}
+
+.filterInput:focus {
+	outline: none;
+	border-color: #007bff;
+}
+
+.filterInput.inputHighlighted {
+	border-color: #007bff;
+	box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+	background-color: white;
+}
+
 .navLink {
 	color: #555;
 	padding: 5px 0;
@@ -80,5 +107,9 @@
 	.assetFilterNav {
 		justify-content: center;
 		margin-bottom: 10px;
+	}
+	.filterInput {
+		min-width: 150px;
+		width: 100%;
 	}
 }
