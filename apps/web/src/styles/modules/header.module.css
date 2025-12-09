@@ -1,0 +1,84 @@
+.mainHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 15px 5%;
+	background-color: white;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	border-bottom: 1px solid #eee;
+}
+
+.logo {
+	font-size: 2em;
+	font-weight: bold;
+	color: #13a450;
+}
+
+.assetFilterNav {
+	display: flex;
+	gap: 20px;
+	flex-wrap: wrap;
+}
+
+.navLink {
+	color: #555;
+	padding: 5px 0;
+	font-size: 0.95em;
+	transition:
+		color 0.2s,
+		border-bottom 0.2s;
+	border-bottom: 3px solid transparent;
+}
+
+.navLink:hover {
+	color: #007bff;
+}
+
+.navLink.active {
+	color: #007bff;
+	border-bottom: 3px solid #007bff;
+	font-weight: bold;
+}
+
+.userActions {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.actionBtn {
+	padding: 8px 15px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.9em;
+}
+
+.liveIcon {
+	color: #e74c3c;
+	border: none;
+	background: none;
+	font-weight: bold;
+}
+
+.loginBtn {
+	background-color: #007bff;
+	color: white;
+	border: 1px solid #007bff;
+	transition: background-color 0.2s;
+}
+
+.loginBtn:hover {
+	background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+	.mainHeader {
+		flex-direction: column;
+		gap: 10px;
+	}
+	.assetFilterNav {
+		justify-content: center;
+		margin-bottom: 10px;
+	}
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาทรัพย์สิน | MERCIL MYAPP</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo">MERCIL</div>
+
+        <nav class="asset-filter-nav">
+            <a href="index.html" class="nav-link">← กลับหน้าหลัก</a>
+        </nav>
+
+        <div class="user-actions">
+            <button class="action-btn login-btn">เข้าร่วม / ลงทะเบียน</button>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <h1>ค้นหาทรัพย์สิน</h1>
+
+        <div class="search-bar" id="main-search-bar">
+            <input type="text" id="search-input" placeholder="พิมพ์ชื่อโครงการ หรือรหัสทรัพย์ (Asset Code)..." autofocus>
+            <button id="search-button">ค้นหา</button>
+        </div>
+
+        <div class="asset-grid-wrapper">
+            <div id="asset-card-container">
+                <p style="text-align: center; grid-column: 1 / -1; padding: 50px; font-size: 1.2em; color: #777;">พิมพ์คำค้นหาเพื่อเริ่ม</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="bottom-nav-bar">
+        <a href="index.html" class="nav-item">
+            <span class="icon">🏠</span>
+            <span class="label">หน้าหลัก</span>
+        </a>
+        <a href="search.html" class="nav-item active">
+            <span class="icon">🔍</span>
+            <span class="label">ค้นหา</span>
+        </a>
+        <a href="chat.html" class="nav-item">
+            <span class="icon">💬</span>
+            <span class="label">ตอบแชท</span>
+        </a>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-2Pmvv0kuTBOz1pG4zFp3gLzmgh4iI5Lp7lT8W/Jq9rM="
+    crossorigin=""></script>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

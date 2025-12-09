@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="asset-title">รายละเอียดทรัพย์สิน</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">MERCIL</div>
+        <nav class="asset-filter-nav">
+            <a href="/pages/index/" class="nav-link">← กลับหน้าหลัก</a>
+        </nav>
+        <div class="user-actions">
+            <button class="action-btn login-btn">เข้าร่วม / ลงทะเบียน</button>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <div id="asset-detail-content">
+            <h1 id="asset-detail-name">กำลังโหลดข้อมูลทรัพย์สิน...</h1>
+            <p id="asset-detail-code" style="color: #666;"></p>
+        </div>
+
+        <div class="detail-grid">
+            <div class="left-column">
+                <div id="image-carousel" class="main-image-placeholder">
+                    [Placeholder for Image Carousel]
+                </div>
+
+                <section class="location-map">
+                    <h2>แผนที่ตั้ง</h2>
+                    <div id="mini-map"></div>
+                </section>
+
+                <section class="bidding-info">
+                    <h2>รายละเอียดการประมูล</h2>
+                    <p><b>ราคาเปิดประมูล:</b> <span id="starting-price" class="price-value"></span></p>
+                    <p><b>ราคาปัจจุบัน:</b> <span id="current-price" class="price-value"></span></p>
+                    <p><b>กำหนดปิดประมูล:</b> <span id="closing-time"></span></p>
+                    <p><b>สถานที่ประมูล:</b> <span id="location-type">Online Auction</span></p>
+                </section>
+
+                <section class="property-description">
+                    <h2>รายละเอียดทรัพย์สิน</h2>
+                    <p id="asset-description"></p>
+                    <ul id="asset-specs">
+                        <li>พื้นที่ใช้สอย: <span id="area-size">N/A</span> ตร.ม.</li>
+                        <li>จำนวนห้องนอน: <span id="num-bed">N/A</span></li>
+                        <li>จำนวนห้องน้ำ: <span id="num-bath">N/A</span></li>
+                    </ul>
+                </section>
+            </div>
+
+            <div class="right-column">
+                <div class="bidding-box">
+                    <h2 class="timer-display">เหลือเวลา: <span id="live-timer">00:00:00</span></h2>
+                    <p>ราคาเสนอสูงสุด: <span id="highest-bid"></span> บาท</p>
+
+                    <div class="bid-input-area">
+                        <label for="bid-amount">จำนวนเงินที่เสนอ (บาท)</label>
+                        <input type="number" id="bid-amount" placeholder="กรอกราคาที่ต้องการประมูล" min="500000">
+                        <button id="place-bid-btn" class="bid-button-lg">เสนอราคา</button>
+                    </div>
+
+                    <div class="bid-history">
+                        <h3>ประวัติการเสนอราคา</h3>
+                        <ul id="history-list">
+                            <li>ไม่มีประวัติการประมูล</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

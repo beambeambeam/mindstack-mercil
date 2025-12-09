@@ -1,0 +1,80 @@
+.contentContainer {
+	padding-top: 50px;
+	text-align: center;
+}
+
+.contentContainer h1 {
+	font-size: 2.2em;
+	color: #1d7874;
+	margin-bottom: 30px;
+	padding-left: 0;
+}
+
+.searchBar {
+	display: flex;
+	justify-content: center;
+	margin: 30px auto 50px auto;
+	max-width: 600px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	border-radius: 50px;
+	overflow: hidden;
+}
+
+.searchBar input[type="text"] {
+	flex-grow: 1;
+	padding: 15px 20px;
+	border: none;
+	font-size: 1em;
+	outline: none;
+}
+
+.searchBar button {
+	background-color: #1d7874;
+	color: white;
+	border: none;
+	padding: 15px 25px;
+	cursor: pointer;
+	font-size: 1em;
+	transition: background-color 0.3s;
+}
+
+.searchBar button:hover {
+	background-color: #145e58;
+}
+
+.loadingMessage {
+	text-align: center;
+	grid-column: 1 / -1;
+	padding: 50px;
+	font-size: 1.2em;
+	color: #1d7874;
+}
+
+.noResultsMessage {
+	text-align: center;
+	grid-column: 1 / -1;
+	padding: 30px;
+	font-size: 1.2em;
+	color: #d64545;
+}
+
+.alternativeOptions {
+	text-align: center;
+	grid-column: 1 / -1;
+	margin-top: 20px;
+	padding: 20px;
+	background: #fff;
+}
+
+.suggestionTitle {
+	color: #1a4f6d;
+}
+
+@media (max-width: 768px) {
+	.searchBar {
+		max-width: 90%;
+	}
+	.contentContainer h1 {
+		font-size: 1.5em;
+	}
+}

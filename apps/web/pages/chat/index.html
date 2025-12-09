@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>เลือกช่องทางการแชท</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="logo">MERCIL</div>
+      <nav class="asset-filter-nav">
+        <a href="/pages/index/" class="nav-link">← กลับหน้าหลัก</a>
+      </nav>
+      <div class="user-actions">
+        <button class="action-btn login-btn">เข้าร่วม / ลงทะเบียน</button>
+      </div>
+    </header>
+
+    <main class="content-container">
+      <h1>เลือกช่องทางการแชท</h1>
+      <p>คุณต้องการแชทกับใครเพื่อสอบถามข้อมูลเกี่ยวกับทรัพย์สิน?</p>
+
+      <div class="chat-options-container">
+        <a href="#" class="chat-option-card owner-chat">
+          <span class="icon">👤</span>
+          <h2>แชทกับเจ้าของทรัพย์สิน</h2>
+          <p>สอบถามรายละเอียดเพิ่มเติม นัดหมายดูสถานที่ หรือพูดคุยเรื่องราคา</p>
+          <div class="action-btn-mini">เริ่มแชท</div>
+        </a>
+
+        <a href="#" class="chat-option-card ai-chat">
+          <span class="icon">🤖</span>
+          <h2>แชทกับ AI Bot (คำถามทั่วไป)</h2>
+          <p>
+            สอบถามคำถามพื้นฐานเกี่ยวกับขั้นตอนการประมูล
+            หรือข้อมูลทรัพย์สินโดยย่อ
+          </p>
+          <div class="action-btn-mini">เริ่มแชท</div>
+        </a>
+      </div>
+    </main>
+
+    <div class="bottom-nav-bar">
+      <a href="/pages/index/" class="nav-item">
+        <span class="icon">🏠</span>
+        <span class="label">หน้าหลัก</span>
+      </a>
+      <a href="/pages/search/" class="nav-item">
+        <span class="icon">🔍</span>
+        <span class="label">ค้นหา</span>
+      </a>
+      <a href="/pages/chat/" class="nav-item active">
+        <span class="icon">💬</span>
+        <span class="label">ตอบแชท</span>
+      </a>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
