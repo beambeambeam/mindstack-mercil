@@ -3,11 +3,13 @@ import { init as initDetail } from "../pages/detail/index";
 import { init as initIndex } from "../pages/index/index";
 import { init as initSearch } from "../pages/search/index";
 import { initAuthModal } from "./components/AuthModal";
+import { initChatButton } from "./components/ChatButton";
 import { initHeader } from "./components/Header";
 import "./styles/index.css";
 
 initAuthModal();
 initHeader();
+initChatButton();
 
 const path = window.location.pathname;
 

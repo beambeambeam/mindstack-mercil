@@ -1,0 +1,13 @@
+export function initChatButton(): void {
+	const existingButton = document.getElementById("floating-chat-button");
+	if (existingButton) return;
+
+	const button = document.createElement("a");
+	button.id = "floating-chat-button";
+	button.href = "/pages/chat/";
+	button.className = "floating-chat-button";
+	button.innerHTML = "💬";
+	button.setAttribute("aria-label", "ไปยังหน้าแชท");
+
+	document.body.appendChild(button);
+}
