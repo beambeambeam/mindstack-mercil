@@ -1,0 +1,211 @@
+---
+alwaysApply: true
+---
+
+# Database Rules
+
+## Database Models
+
+### Location and Organization
+
+- **Location**: Database models (SQLModel/SQLAlchemy) MUST be in `app/models/` directory
+- **Organization**: Organize by domain/resource, similar to schemas
+  - Example: `app/models/asset.py`, `app/models/user_profile.py`
+- **Separation**: Keep database models separate from Pydantic schemas
+  - `app/models/` = Database ORM models (SQLModel/SQLAlchemy)
+  - `app/schemas/` = API request/response validation models (Pydantic)
+
+### Model Definition
+
+- Use SQLModel for database models (combines SQLAlchemy + Pydantic)
+- Define models with `table=True` for database tables
+- Use `Field()` for column definitions with proper types
+- Use `sa_column=Column(...)` for advanced column types (Vector, Geometry, etc.)
+
+### Example Model Structure
+
+```python
+# app/models/asset.py
+from typing import Optional
+from sqlmodel import Field, SQLModel
+from pgvector.sqlalchemy import Vector
+from sqlalchemy import Column
+from geoalchemy2 import Geometry
+
+class Asset(SQLModel, table=True):
+    __tablename__ = "asset"
+    
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str
+    asset_vector: Optional[list[float]] = Field(
+        default=None, sa_column=Column(Vector(768), nullable=True)
+    )
+    location_geom: Optional[str] = Field(
+        default=None,
+        sa_column=Column(Geometry("POINT", srid=4326), nullable=True),
+    )
+```
+
+## Database Connection
+
+### Location
+
+- **Engine and Session**: Database engine and session management MUST be in `app/db/database.py`
+- **Structure**: 
+  ```
+  app/db/
+  ├── __init__.py      # Exports engine, get_session
+  └── database.py      # Engine creation and session dependency
+  ```
+
+### Configuration
+
+- Use `settings.DATABASE_URL` from `app.core.config.settings`
+- Create engine with `pool_pre_ping=True` for connection health checks
+- Use `get_session()` as FastAPI dependency for route handlers
+
+### Example Database Setup
+
+```python
+# app/db/database.py
+from sqlmodel import Session, create_engine
+from app.core.config import settings
+
+if not settings.DATABASE_URL:
+    raise ValueError("DATABASE_URL must be set in environment variables")
+
+engine = create_engine(
+    settings.DATABASE_URL,
+    pool_pre_ping=True,
+    echo=False,
+)
+
+def get_session():
+    """FastAPI dependency to get a database session."""
+    with Session(engine) as session:
+        yield session
+```
+
+### Using Sessions in Routes
+
+```python
+# app/routers/items.py
+from fastapi import Depends
+from sqlmodel import Session
+from app.db import get_session
+
+@router.get("/items")
+async def get_items(db: Session = Depends(get_session)):
+    # Use db session here
+    return items
+```
+
+## Database Migrations (Alembic)
+
+### Location and Structure
+
+- **Location**: Alembic configuration is in the root `alembic/` directory
+- **Structure**:
+  ```
+  alembic/
+  ├── env.py              # Environment setup, imports models
+  ├── script.py.mako      # Migration template
+  └── versions/           # Migration files
+      └── *.py            # Individual migration files
+  alembic.ini              # Main Alembic configuration
+  ```
+
+### Configuration
+
+- `alembic.ini` - Main Alembic configuration (connection string is overridden in env.py)
+- `alembic/env.py` - Environment setup that:
+  - Imports all models from `app.models`
+  - Uses `settings.DATABASE_URL` from settings
+  - Sets `target_metadata = SQLModel.metadata`
+
+### Model Registration
+
+- **CRITICAL**: All models in `app/models/` MUST be imported in `alembic/env.py`
+- This is required for autogenerate to detect model changes
+- Import models even if not directly used: `from app.models.asset import Asset, AssetType  # noqa: F401`
+
+### Best Practices
+
+1. **Creating Migrations**:
+   - Always use `--autogenerate` flag: `uv run alembic revision --autogenerate -m "description"`
+   - Review generated migrations before applying
+   - Use descriptive migration messages
+
+2. **Migration Safety**:
+   - Never edit existing migrations that have been applied to production
+   - Test migrations on development/staging first
+   - Always backup database before applying migrations in production
+
+3. **Migration Naming**:
+   - Use clear, descriptive messages
+   - Examples: "Add user table", "Add index to asset_code", "Add vector column to asset"
+
+### Commands
+
+```bash
+# Create a new migration (autogenerate)
+uv run alembic revision --autogenerate -m "description"
+
+# Apply all pending migrations
+uv run alembic upgrade head
+
+# Rollback last migration
+uv run alembic downgrade -1
+
+# Rollback to specific revision
+uv run alembic downgrade <revision_id>
+
+# Show current database revision
+uv run alembic current
+
+# Show migration history
+uv run alembic history
+
+# Show migration history (verbose)
+uv run alembic history --verbose
+```
+
+### Workflow
+
+1. **Make model changes** in `app/models/`
+2. **Create migration**: `uv run alembic revision --autogenerate -m "description"`
+3. **Review migration file** in `alembic/versions/`
+4. **Test migration**: Apply to development database
+5. **Apply migration**: `uv run alembic upgrade head`
+
+## Database Extensions
+
+### PostgreSQL Extensions
+
+- **pgvector**: For vector similarity search (embeddings)
+  - Use `Vector(dim)` column type
+  - Example: `Column(Vector(768), nullable=True)`
+  
+- **PostGIS**: For geospatial queries
+  - Use `Geometry` column type from `geoalchemy2`
+  - Example: `Column(Geometry("POINT", srid=4326), nullable=True)`
+
+### Extension Initialization
+
+- Extensions are enabled in `scripts/init.sql` (run by Docker Compose)
+- Extensions: `vector`, `postgis`
+- Migrations should not create extensions (handled by init script)
+
+## Type Safety
+
+- Use proper type hints for all model fields
+- Use `Optional[T]` for nullable fields
+- Use `list[float]` for vector columns (not `List[float]` - Python 3.9+)
+- Use `datetime` for DateTime columns (not `str`)
+
+## References
+
+- SQLModel: https://sqlmodel.tiangolo.com/
+- Alembic: https://alembic.sqlalchemy.org/
+- pgvector: https://github.com/pgvector/pgvector
+- GeoAlchemy2: https://geoalchemy-2.readthedocs.io/
