@@ -36,6 +36,68 @@ export async function searchAssets(
 	return parseJsonResponse<SearchResponse>(response, url);
 }
 
+export async function searchAssetsGET(params: {
+	query_text?: string;
+	price_min?: number;
+	price_max?: number;
+	bedrooms_min?: number;
+	asset_type_id?: number | number[];
+	page?: number;
+	page_size?: number;
+}): Promise<SearchResponse> {
+	const urlParams = new URLSearchParams();
+
+	if (params.query_text) {
+		urlParams.append("query_text", params.query_text);
+	}
+
+	if (params.price_min !== undefined) {
+		urlParams.append("price_min", String(params.price_min));
+	}
+
+	if (params.price_max !== undefined) {
+		urlParams.append("price_max", String(params.price_max));
+	}
+
+	if (params.bedrooms_min !== undefined) {
+		urlParams.append("bedrooms_min", String(params.bedrooms_min));
+	}
+
+	if (params.asset_type_id !== undefined) {
+		if (Array.isArray(params.asset_type_id)) {
+			for (const id of params.asset_type_id) {
+				urlParams.append("asset_type_id", String(id));
+			}
+		} else {
+			urlParams.append("asset_type_id", String(params.asset_type_id));
+		}
+	}
+
+	if (params.page !== undefined) {
+		urlParams.append("page", String(params.page));
+	}
+
+	if (params.page_size !== undefined) {
+		urlParams.append("page_size", String(params.page_size));
+	}
+
+	const url = `${API_URL}/search?${urlParams.toString()}`;
+	const response = await fetch(url);
+
+	if (!response.ok) {
+		const text = await response.text();
+		console.error(
+			`API Error ${response.status} ${response.statusText} from ${url}`,
+		);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+		);
+	}
+
+	return parseJsonResponse<SearchResponse>(response, url);
+}
+
 async function parseJsonResponse<T>(
 	response: Response,
 	url: string,

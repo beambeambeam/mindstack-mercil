@@ -77,7 +77,8 @@
 }
 
 .priceInput,
-.numberInput {
+.numberInput,
+.textInput {
 	padding: 10px 15px;
 	border: 2px solid #ddd;
 	border-radius: 6px;
@@ -87,13 +88,34 @@
 }
 
 .priceInput:focus,
-.numberInput:focus {
+.numberInput:focus,
+.textInput:focus {
 	outline: none;
 	border-color: #007bff;
 }
 
 .priceInputs .priceInput {
 	flex: 1;
+}
+
+.searchButton {
+	padding: 12px 30px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 1em;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.searchButton:hover {
+	background-color: #0056b3;
+}
+
+.searchButton:active {
+	background-color: #004085;
 }
 
 @media (max-width: 768px) {

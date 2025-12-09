@@ -233,9 +233,21 @@ async def hybrid_search(
     )
 
     # Execute count query (using execute for raw SQL text queries)
-    count_params = params.copy()
-    count_params.pop("limit", None)
-    count_params.pop("offset", None)
+    # Only include params that are actually used in the count query
+    count_params: dict[str, Any] = {}
+    if filters.price_min:
+        count_params["price_min"] = filters.price_min
+    if filters.price_max:
+        count_params["price_max"] = filters.price_max
+    bedrooms = filters.bedrooms_min or parsed_filters.get("bedrooms_min")
+    if bedrooms:
+        count_params["bedrooms_min"] = bedrooms
+    if filters.asset_type_id:
+        count_params["asset_type_id"] = filters.asset_type_id
+    if location_coords:
+        count_params["lon"] = location_coords[1]
+        count_params["lat"] = location_coords[0]
+        count_params["radius_meters"] = GEOSPATIAL_RADIUS_METERS
 
     total_count_statement = text(count_query).bindparams(**count_params)
     total_count_result = db.exec(total_count_statement).scalar_one()

@@ -70,11 +70,100 @@
 	color: #1a4f6d;
 }
 
+.paginationContainer {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	margin-top: 40px;
+	padding: 20px 0;
+	flex-wrap: wrap;
+}
+
+.paginationButton {
+	padding: 10px 20px;
+	background-color: #1d7874;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 0.95em;
+	transition: background-color 0.2s;
+}
+
+.paginationButton:hover:not(:disabled) {
+	background-color: #145e58;
+}
+
+.paginationButton:disabled {
+	background-color: #ccc;
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+
+.pageNumbers {
+	display: flex;
+	gap: 5px;
+	align-items: center;
+}
+
+.pageButton {
+	padding: 8px 14px;
+	background-color: white;
+	color: #1d7874;
+	border: 2px solid #1d7874;
+	border-radius: 6px;
+	cursor: pointer;
+	font-size: 0.95em;
+	transition: all 0.2s;
+	min-width: 40px;
+}
+
+.pageButton:hover {
+	background-color: #f0f0f0;
+	border-color: #145e58;
+	color: #145e58;
+}
+
+.pageButtonActive {
+	background-color: #1d7874;
+	color: white;
+	border-color: #1d7874;
+	font-weight: bold;
+}
+
+.pageButtonActive:hover {
+	background-color: #145e58;
+	border-color: #145e58;
+	color: white;
+}
+
+.pageEllipsis {
+	padding: 8px 4px;
+	color: #666;
+	font-size: 0.95em;
+}
+
 @media (max-width: 768px) {
 	.searchBar {
 		max-width: 90%;
 	}
 	.contentContainer h1 {
 		font-size: 1.5em;
+	}
+
+	.paginationContainer {
+		gap: 5px;
+	}
+
+	.paginationButton {
+		padding: 8px 16px;
+		font-size: 0.9em;
+	}
+
+	.pageButton {
+		padding: 6px 10px;
+		font-size: 0.85em;
+		min-width: 35px;
 	}
 }

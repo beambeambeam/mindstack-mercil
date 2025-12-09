@@ -4,6 +4,7 @@ import type { AssetType } from "../types/asset";
 
 export interface FilterState {
 	assetType: string;
+	queryText?: string;
 	priceMin?: number;
 	priceMax?: number;
 	bedroomsMin?: number;
@@ -54,6 +55,27 @@ export function createFilterOverlay(
 	const filterPanel = document.createElement("div");
 	filterPanel.className = filterOverlayStyles.filterPanel;
 	filterPanelElement = filterPanel;
+
+	const queryTextSection = document.createElement("div");
+	queryTextSection.className = filterOverlayStyles.filterSection;
+
+	const queryTextLabel = document.createElement("h3");
+	queryTextLabel.className = filterOverlayStyles.filterLabel;
+	queryTextLabel.textContent = "ค้นหาคำ";
+	queryTextSection.appendChild(queryTextLabel);
+
+	const queryTextInput = document.createElement("input");
+	queryTextInput.type = "text";
+	queryTextInput.placeholder = "พิมพ์ชื่อโครงการ หรือรหัสทรัพย์...";
+	queryTextInput.className = filterOverlayStyles.textInput;
+	queryTextInput.value = currentFilterState.queryText || "";
+	queryTextInput.addEventListener("input", () => {
+		currentFilterState.queryText = queryTextInput.value.trim() || undefined;
+		updateSearchButtonVisibility();
+	});
+
+	queryTextSection.appendChild(queryTextInput);
+	filterPanel.appendChild(queryTextSection);
 
 	const propertyTypeSection = document.createElement("div");
 	propertyTypeSection.className = filterOverlayStyles.filterSection;
@@ -110,6 +132,7 @@ export function createFilterOverlay(
 		if (onFilterChangeCallback) {
 			onFilterChangeCallback(currentFilterState);
 		}
+		updateSearchButtonVisibility();
 	});
 
 	const priceMaxInput = document.createElement("input");
@@ -124,6 +147,7 @@ export function createFilterOverlay(
 		if (onFilterChangeCallback) {
 			onFilterChangeCallback(currentFilterState);
 		}
+		updateSearchButtonVisibility();
 	});
 
 	priceInputs.appendChild(priceMinInput);
@@ -152,6 +176,7 @@ export function createFilterOverlay(
 		if (onFilterChangeCallback) {
 			onFilterChangeCallback(currentFilterState);
 		}
+		updateSearchButtonVisibility();
 	});
 
 	bedroomsSection.appendChild(bedroomsInput);
@@ -182,6 +207,26 @@ export function createFilterOverlay(
 
 	bathroomsSection.appendChild(bathroomsInput);
 	filterPanel.appendChild(bathroomsSection);
+
+	const searchButtonContainer = document.createElement("div");
+	searchButtonContainer.style.display = "flex";
+	searchButtonContainer.style.justifyContent = "flex-end";
+	searchButtonContainer.style.marginTop = "30px";
+	searchButtonContainer.style.paddingTop = "20px";
+	searchButtonContainer.style.borderTop = "1px solid #eee";
+
+	const searchButton = document.createElement("button");
+	searchButton.type = "button";
+	searchButton.className = filterOverlayStyles.searchButton;
+	searchButton.textContent = "ค้นหา";
+	searchButton.addEventListener("click", () => {
+		navigateToSearch();
+	});
+
+	updateSearchButtonVisibility(searchButton);
+
+	searchButtonContainer.appendChild(searchButton);
+	filterPanel.appendChild(searchButtonContainer);
 
 	overlayElement.appendChild(filterPanel);
 	document.body.appendChild(overlayElement);
@@ -226,6 +271,7 @@ function createPropertyTypeOption(
 
 		currentFilterState.assetType = value;
 		updateInputDisplay();
+		updateSearchButtonVisibility();
 	});
 
 	return option;
@@ -251,6 +297,8 @@ export function openFilterOverlay(): void {
 		inputElement.classList.add(headerStyles.inputHighlighted);
 		inputElement.focus();
 	}
+
+	updateSearchButtonVisibility();
 }
 
 export function closeFilterOverlay(): void {
@@ -318,4 +366,53 @@ export function setAssetType(assetType: string): void {
 			}
 		});
 	}
+
+	updateSearchButtonVisibility();
+}
+
+function updateSearchButtonVisibility(button?: HTMLButtonElement): void {
+	const searchBtn =
+		button ||
+		(filterPanelElement?.querySelector(
+			`.${filterOverlayStyles.searchButton}`,
+		) as HTMLButtonElement);
+	if (!searchBtn) return;
+	searchBtn.style.display = "block";
+}
+
+function navigateToSearch(): void {
+	const params = new URLSearchParams();
+
+	if (
+		currentFilterState.queryText !== undefined &&
+		currentFilterState.queryText.trim() !== ""
+	) {
+		params.append("query_text", currentFilterState.queryText.trim());
+	}
+
+	if (currentFilterState.assetType !== "all") {
+		const assetTypeId = parseInt(currentFilterState.assetType, 10);
+		if (!Number.isNaN(assetTypeId)) {
+			params.append("asset_type_id", String(assetTypeId));
+		}
+	}
+
+	if (currentFilterState.priceMin !== undefined) {
+		params.append("price_min", String(currentFilterState.priceMin));
+	}
+
+	if (currentFilterState.priceMax !== undefined) {
+		params.append("price_max", String(currentFilterState.priceMax));
+	}
+
+	if (currentFilterState.bedroomsMin !== undefined) {
+		params.append("bedrooms_min", String(currentFilterState.bedroomsMin));
+	}
+
+	const queryString = params.toString();
+	const searchUrl = queryString
+		? `/pages/search/?${queryString}`
+		: "/pages/search/";
+
+	window.location.href = searchUrl;
 }
