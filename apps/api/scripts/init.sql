@@ -1,12 +1,11 @@
 -- Database initialization script for PostgreSQL
 -- Enables required extensions for pgvector and PostGIS
--- Note: Extensions are pre-installed in ivanlonel/postgis-with-extensions image
-
--- Enable pgvector extension for vector similarity search
-CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Enable PostGIS extension for geospatial queries
 CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- Enable pgvector extension for vector similarity search
+CREATE EXTENSION IF NOT EXISTS vector;
 
 -- Verify extensions are installed
 SELECT

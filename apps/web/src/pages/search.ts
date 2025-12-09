@@ -1,7 +1,7 @@
 import { renderAssetCards } from "../components/AssetCard";
-import { getAllAssets, getAssetTypes } from "../services/api";
+import { getAllAssets } from "../services/api";
 import { getParsedFilters, hybridSearchAPI } from "../services/search";
-import type { Asset, AssetType } from "../types/asset";
+import type { Asset } from "../types/asset";
 import { extractAssetTypes, formatPrice } from "../utils/format";
 
 let allAssets: Asset[] = [];
