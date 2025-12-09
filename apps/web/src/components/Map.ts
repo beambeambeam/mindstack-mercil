@@ -47,7 +47,14 @@ export function initMapWithAssets(
 		return null;
 	}
 
-	if (assets.length === 0) return null;
+	if (mapInstance) {
+		mapInstance.remove();
+		mapInstance = null;
+	}
+
+	if (assets.length === 0) {
+		return null;
+	}
 
 	const validAssets = assets.filter(
 		(asset) =>

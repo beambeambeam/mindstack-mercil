@@ -17,6 +17,7 @@ export async function init() {
 	console.log("Index page initialized");
 
 	const container = document.getElementById("asset-card-container");
+	const mapContainer = document.getElementById("map");
 
 	try {
 		const [assetsResponse, typesResponse] = await Promise.all([
@@ -33,7 +34,9 @@ export async function init() {
 			renderAssetCards(allAssets, assetTypesForDisplay, container);
 		}
 
-		initMapWithAssets("map", allAssets);
+		if (mapContainer) {
+			initMapWithAssets("map", allAssets);
+		}
 
 		createPropertyTypeTabs(assetTypes, (assetType: string) => {
 			currentAssetTypeFilter = assetType;
@@ -48,7 +51,9 @@ export async function init() {
 			if (container) {
 				renderAssetCards(filteredList, assetTypesForDisplay, container);
 			}
-			initMapWithAssets("map", filteredList);
+			if (mapContainer) {
+				initMapWithAssets("map", filteredList);
+			}
 		});
 
 		renderFilterNavigation(assetTypes, (filterState: FilterState) => {
