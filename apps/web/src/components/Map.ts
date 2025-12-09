@@ -11,6 +11,11 @@ export function initMap(
 	zoom: number = 15,
 	popupText?: string,
 ): L.Map {
+	const mapElement = document.getElementById(containerId);
+	if (!mapElement) {
+		throw new Error(`Map container with ID "${containerId}" not found`);
+	}
+
 	if (mapInstance) {
 		mapInstance.remove();
 	}
@@ -36,6 +41,12 @@ export function initMapWithAssets(
 	containerId: string,
 	assets: Asset[],
 ): L.Map | null {
+	const mapElement = document.getElementById(containerId);
+	if (!mapElement) {
+		console.error(`Map container with ID "${containerId}" not found`);
+		return null;
+	}
+
 	if (assets.length === 0) return null;
 
 	const validAssets = assets.filter(
@@ -46,7 +57,17 @@ export function initMapWithAssets(
 			!Number.isNaN(asset.location_longitude),
 	);
 
-	if (validAssets.length === 0) return null;
+	if (validAssets.length === 0) {
+		const defaultLat = 13.736717;
+		const defaultLng = 100.523186;
+		const map = L.map(containerId).setView([defaultLat, defaultLng], 10);
+		L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+			attribution: "© OpenStreetMap contributors",
+		}).addTo(map);
+		setTimeout(() => map.invalidateSize(), 100);
+		mapInstance = map;
+		return map;
+	}
 
 	const coordinates: [number, number][] = [];
 	for (const asset of validAssets) {

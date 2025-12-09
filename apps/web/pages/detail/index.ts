@@ -81,8 +81,14 @@ async function loadAssetDetails() {
 	const lat = selectedAsset.location_latitude;
 	const lng = selectedAsset.location_longitude;
 
-	if (lat && lng) {
-		initMap("mini-map", [selectedAsset], 15);
+	if (
+		lat !== null &&
+		lng !== null &&
+		!Number.isNaN(lat) &&
+		!Number.isNaN(lng)
+	) {
+		const name = selectedAsset.name_th || "ไม่ระบุชื่อ";
+		initMap("mini-map", lat, lng, 15, name);
 	} else {
 		const miniMapEl = document.getElementById("mini-map");
 		if (miniMapEl) {

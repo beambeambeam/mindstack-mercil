@@ -1,5 +1,5 @@
 import { renderAssetCards } from "../../src/components/AssetCard";
-import { initMap } from "../../src/components/Map";
+import { initMapWithAssets } from "../../src/components/Map";
 import { env } from "../../src/env";
 import { getAllAssets } from "../../src/services/api";
 import headerStyles from "../../src/styles/modules/header.module.css";
@@ -45,7 +45,7 @@ export async function init() {
 		renderAssetCards(allAssets, assetTypes, container);
 	}
 
-	initMap("map", allAssets, 10);
+	initMapWithAssets("map", allAssets);
 
 	const filterNav = document.querySelector(`.${headerStyles.assetFilterNav}`);
 	if (filterNav) {
@@ -84,7 +84,7 @@ export async function init() {
 				if (container) {
 					renderAssetCards(filteredList, assetTypes, container);
 				}
-				initMap("map", filteredList, 10);
+				initMapWithAssets("map", filteredList);
 			});
 		});
 	}
