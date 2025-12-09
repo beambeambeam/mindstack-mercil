@@ -1,12 +1,21 @@
 """Recommendation service: item-based, user-based, and profile updates."""
 
-from typing import Literal
-
 import numpy as np
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.sql import text
 from sqlmodel import Session
 
+from app.core.config.constants import (
+    ACTION_WEIGHTS,
+    ITEM_RECOMMENDATIONS_LIMIT,
+    LOCATION_DISTANCE_NORMALIZATION,
+    USER_RECOMMENDATIONS_LIMIT,
+    WEIGHT_BEDROOMS,
+    WEIGHT_LOCATION,
+    WEIGHT_PRICE,
+    WEIGHT_PROPERTY_TYPE,
+    WEIGHT_VECTOR,
+)
 from app.core.config.logging import get_logger
 from app.models.asset import Asset
 from app.models.user_profile import UserProfile
@@ -14,8 +23,6 @@ from app.schemas.search import AssetResultSchema
 from app.services.search_service import mock_image_url
 
 logger = get_logger(__name__)
-
-ACTION_WEIGHTS: dict[Literal["click", "save"], float] = {"click": 1.0, "save": 3.0}
 
 
 def get_item_recommendations(asset_id: int, db: Session) -> list[AssetResultSchema]:
@@ -41,19 +48,21 @@ def get_item_recommendations(asset_id: int, db: Session) -> list[AssetResultSche
             asset.location_latitude,
             asset.location_longitude,
             (
-                1.0 * (1 - (asset.asset_vector <=> target.asset_vector)) +
-                2.0 * CASE WHEN asset.asset_type_id = target.asset_type_id THEN 1 ELSE 0 END +
-                1.5 * CASE
+                :weight_vector * (1 - (asset.asset_vector <=> target.asset_vector)) +
+                :weight_property_type * CASE
+                    WHEN asset.asset_type_id = target.asset_type_id THEN 1 ELSE 0
+                END +
+                :weight_price * CASE
                     WHEN target.price > 0 THEN
                         1 - LEAST(ABS(asset.price - target.price) / target.price, 1.0)
                     ELSE 0
                 END +
-                1.5 * CASE
+                :weight_bedrooms * CASE
                     WHEN target.bedrooms > 0 THEN
                         1 - LEAST(ABS(asset.bedrooms - target.bedrooms) / target.bedrooms, 1.0)
                     ELSE 0
                 END +
-                0.5 * CASE
+                :weight_location * CASE
                     WHEN asset.location_latitude IS NOT NULL
                          AND asset.location_longitude IS NOT NULL
                          AND target.location_latitude IS NOT NULL
@@ -76,7 +85,7 @@ def get_item_recommendations(asset_id: int, db: Session) -> list[AssetResultSche
                                         ),
                                         4326
                                     )::geography
-                                ) / 50000
+                                ) / :distance_norm
                             )
                         )
                     ELSE 0
@@ -87,11 +96,23 @@ def get_item_recommendations(asset_id: int, db: Session) -> list[AssetResultSche
           AND asset.asset_vector IS NOT NULL
           AND asset.price > 0
         ORDER BY similarity_score DESC
-        LIMIT 5
+        LIMIT :item_limit
         """
     )
 
-    rows = db.execute(query, {"asset_id": asset_id}).fetchall()
+    rows = db.exec(
+        query,
+        {
+            "asset_id": asset_id,
+            "weight_vector": WEIGHT_VECTOR,
+            "weight_property_type": WEIGHT_PROPERTY_TYPE,
+            "weight_price": WEIGHT_PRICE,
+            "weight_bedrooms": WEIGHT_BEDROOMS,
+            "weight_location": WEIGHT_LOCATION,
+            "distance_norm": LOCATION_DISTANCE_NORMALIZATION,
+            "item_limit": ITEM_RECOMMENDATIONS_LIMIT,
+        },
+    ).fetchall()
 
     return [
         AssetResultSchema(
@@ -126,11 +147,14 @@ def get_user_recommendations(client_id: str, db: Session) -> list[AssetResultSch
         WHERE assets.asset_vector IS NOT NULL
           AND user_vector.profile_vector IS NOT NULL
         ORDER BY assets.asset_vector <=> user_vector.profile_vector
-        LIMIT 10
+        LIMIT :user_limit
         """
     )
 
-    rows = db.execute(query, {"client_id": client_id}).fetchall()
+    rows = db.exec(
+        query,
+        {"client_id": client_id, "user_limit": USER_RECOMMENDATIONS_LIMIT},
+    ).fetchall()
 
     return [
         AssetResultSchema(
@@ -182,7 +206,7 @@ def update_user_profile(client_id: str, asset_id: int, action_type: str, db: Ses
                 profile_weight=action_weight,
             ),
         )
-        db.execute(do_update_stmt)
+        db.exec(do_update_stmt)
 
     try:
         db.commit()
