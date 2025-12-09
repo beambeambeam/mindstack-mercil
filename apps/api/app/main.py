@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.config.logging import get_logger, setup_logging
-from .routers import assets, health, ingest, recommend, search
+from .routers import assets, chat, health, ingest, recommend, search
 
 # Setup logging configuration
 setup_logging()
@@ -107,6 +107,7 @@ app.include_router(assets.router)
 app.include_router(ingest.router)
 app.include_router(recommend.router)
 app.include_router(search.router)
+app.include_router(chat.router)
 
 
 @app.get("/")
