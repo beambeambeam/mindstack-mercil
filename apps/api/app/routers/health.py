@@ -16,6 +16,7 @@ from app.schemas.health import (
     HealthCheckResponse,
     ServiceStatus,
 )
+from app.services import chat_service
 
 logger = get_logger(__name__)
 
@@ -106,6 +107,35 @@ async def check_ollama() -> ServiceStatus:
         )
 
 
+async def check_chat_service() -> ServiceStatus:
+    """Check chat/RAG readiness (retriever and chain)."""
+    start_time = time.time()
+    try:
+        if chat_service.rag_chain is None:
+            return ServiceStatus(
+                status="unhealthy",
+                error="RAG chain not initialized",
+                response_time_ms=round((time.time() - start_time) * 1000, 2),
+            )
+        if chat_service.retriever is None:
+            return ServiceStatus(
+                status="unhealthy",
+                error="Retriever not initialized",
+                response_time_ms=round((time.time() - start_time) * 1000, 2),
+            )
+        return ServiceStatus(
+            status="healthy",
+            response_time_ms=round((time.time() - start_time) * 1000, 2),
+        )
+    except Exception as e:  # pragma: no cover - defensive
+        logger.error(f"Chat service health check unexpected error: {e}")
+        return ServiceStatus(
+            status="unhealthy",
+            error=f"Unexpected error: {str(e)}",
+            response_time_ms=round((time.time() - start_time) * 1000, 2),
+        )
+
+
 @router.get("", response_model=HealthCheckResponse)
 async def health_check() -> HealthCheckResponse:
     """Basic health check endpoint - checks if API is running."""
@@ -155,14 +185,17 @@ async def detailed_health_check() -> DetailedHealthCheckResponse:
     api_status = ApiStatus(status="healthy", service="api")
     db_status = await check_database()
     ollama_status = await check_ollama()
+    chat_status = await check_chat_service()
 
     overall_status: Literal["healthy", "degraded", "unhealthy"] = "healthy"
     unhealthy_count = sum(
-        1 for service_status in [db_status, ollama_status] if service_status.status == "unhealthy"
+        1
+        for service_status in [db_status, ollama_status, chat_status]
+        if service_status.status == "unhealthy"
     )
-    if unhealthy_count == 2:
+    if unhealthy_count == 3:
         overall_status = "unhealthy"
-    elif unhealthy_count == 1:
+    elif unhealthy_count >= 1:
         overall_status = "degraded"
 
     health_response = DetailedHealthCheckResponse(
@@ -172,6 +205,7 @@ async def detailed_health_check() -> DetailedHealthCheckResponse:
             "api": api_status,
             "database": db_status,
             "ollama": ollama_status,
+            "chat": chat_status,
         },
     )
 
