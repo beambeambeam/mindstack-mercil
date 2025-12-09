@@ -1,0 +1,70 @@
+---
+description: API integration patterns and error handling
+---
+
+# API Integration
+
+## Base Configuration
+
+- API URL configured via environment: `env.VITE_API_URL` from [src/env.ts](mdc:apps/web/src/env.ts)
+- Default: `http://localhost:8000`
+- All API calls go through [src/services/api.ts](mdc:apps/web/src/services/api.ts)
+
+## Request Patterns
+
+### GET Requests
+
+```typescript
+const url = `${API_URL}/assets?page=${page}&page_size=${pageSize}`;
+const response = await fetch(url);
+```
+
+### POST Requests
+
+```typescript
+const url = `${API_URL}/search`;
+const response = await fetch(url, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(request),
+});
+```
+
+## Error Handling
+
+Always follow this pattern:
+
+1. Check `response.ok` before parsing
+2. Log detailed error information
+3. Parse response text for debugging
+4. Throw descriptive errors with API URL
+5. Use `parseJsonResponse` helper for JSON parsing
+
+See [src/services/api.ts](mdc:apps/web/src/services/api.ts) for the `parseJsonResponse` helper.
+
+## Response Types
+
+- Match backend schemas exactly
+- Use interfaces from [src/types/asset.ts](mdc:apps/web/src/types/asset.ts)
+- Handle nullable fields properly
+- Validate response structure
+
+## Parallel Requests
+
+Use `Promise.all()` for independent requests:
+
+```typescript
+const [assetsResponse, typesResponse] = await Promise.all([
+  getAllAssets(1, 200),
+  getAssetTypes(),
+]);
+```
+
+## Fallback Strategies
+
+- Implement fallback to simple search if API fails (see [src/services/search.ts](mdc:apps/web/src/services/search.ts))
+- Show user-friendly error messages in Thai
+- Include API URL in error messages for debugging
+- Log errors to console for development

@@ -1,0 +1,50 @@
+---
+globs: *.css,**/*.module.css
+---
+
+# Styling Guidelines
+
+## CSS Modules
+
+- Use CSS modules for component styles: `*.module.css`
+- Import modules: `import styles from "../styles/modules/header.module.css"`
+- Use camelCase class names in CSS modules
+- Apply classes: `class="${styles.navLink}"`
+- Combine classes: `${styles.navLink} ${styles.active}`
+
+## Global Styles
+
+- Global styles in [src/style.css](mdc:apps/web/src/style.css) and [src/styles/index.css](mdc:apps/web/src/styles/index.css)
+- Page-specific styles in `pages/{page}/index.css`
+- Use CSS variables for theming
+- Follow BEM-like naming for global classes
+
+## CSS Module Location
+
+CSS modules are in [src/styles/modules/](mdc:apps/web/src/styles/modules/):
+- `assetCard.module.css`
+- `authModal.module.css`
+- `header.module.css`
+- `map.module.css`
+- etc.
+
+## Styling Patterns
+
+- Use CSS modules for scoped component styles
+- Use global CSS for layout and base styles
+- Use inline styles sparingly (only for dynamic values)
+- Prefer CSS classes over inline styles
+- Use CSS Grid/Flexbox for layouts
+
+## Thai Language Support
+
+- Ensure fonts support Thai characters
+- Use appropriate line-height for Thai text
+- Consider RTL if needed (though Thai is LTR)
+
+## Responsive Design
+
+- Use mobile-first approach
+- Use media queries for breakpoints
+- Test on various screen sizes
+- Consider touch targets for mobile
