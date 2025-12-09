@@ -58,3 +58,21 @@ async def track_action(
         db=db,
     )
     return {"status": "received"}
+
+
+@router.post("/track/action", status_code=status.HTTP_202_ACCEPTED)
+async def track_action_legacy(
+    payload: TrackActionSchema,
+    background_tasks: BackgroundTasks,
+    x_client_id: str = Header(..., alias="X-Client-ID"),
+    db: Session = Depends(get_session),
+) -> dict[str, str]:
+    """Legacy path parity with archive: /track/action."""
+    background_tasks.add_task(
+        recommend_service.update_user_profile,
+        client_id=x_client_id,
+        asset_id=payload.asset_id,
+        action_type=payload.action_type,
+        db=db,
+    )
+    return {"status": "received"}
