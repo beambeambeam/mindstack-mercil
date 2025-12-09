@@ -18,6 +18,7 @@
 	display: flex;
 	gap: 20px;
 	flex-wrap: wrap;
+	width: 100%;
 }
 
 .filterInput {
@@ -29,7 +30,10 @@
 	background-color: white;
 	cursor: pointer;
 	transition: all 0.2s;
-	min-width: 200px;
+	width: 100%;
+	flex: 1;
+	min-width: 0;
+	box-sizing: border-box;
 }
 
 .filterInput:hover {
@@ -107,9 +111,10 @@
 	.assetFilterNav {
 		justify-content: center;
 		margin-bottom: 10px;
+		width: 100%;
 	}
 	.filterInput {
-		min-width: 150px;
 		width: 100%;
+		min-width: 0;
 	}
 }

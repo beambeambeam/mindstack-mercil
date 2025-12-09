@@ -35,7 +35,7 @@ export function renderFilterNavigation(
 	const input = document.createElement("input");
 	input.type = "text";
 	input.className = headerStyles.filterInput;
-	input.value = "ทั้งหมด";
+	input.value = "ค้นหาสินทรัพย์ และ อื่นๆ";
 	input.readOnly = true;
 	input.placeholder = "เลือกประเภททรัพย์สิน";
 

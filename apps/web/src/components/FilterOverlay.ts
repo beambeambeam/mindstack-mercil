@@ -47,6 +47,10 @@ export function createFilterOverlay(
 	overlayElement.className = filterOverlayStyles.overlay;
 	overlayElement.id = "filter-overlay";
 
+	const header = document.querySelector(".main-header");
+	const headerHeight = header ? header.getBoundingClientRect().height : 0;
+	overlayElement.style.top = `${headerHeight}px`;
+
 	const filterPanel = document.createElement("div");
 	filterPanel.className = filterOverlayStyles.filterPanel;
 	filterPanelElement = filterPanel;
@@ -282,6 +286,10 @@ export function openFilterOverlay(): void {
 	}
 	if (!overlayElement) return;
 
+	const header = document.querySelector(".main-header");
+	const headerHeight = header ? header.getBoundingClientRect().height : 0;
+	overlayElement.style.top = `${headerHeight}px`;
+
 	overlayElement.classList.add(filterOverlayStyles.overlayVisible);
 	document.body.style.overflow = "hidden";
 
@@ -318,7 +326,7 @@ export function updateInputDisplay(): void {
 
 	const selectedType = currentFilterState.assetType;
 	if (selectedType === "all") {
-		inputElement.value = "ทั้งหมด";
+		inputElement.value = "ค้นหาสินทรัพย์ และ อื่นๆ";
 	} else {
 		const filterPanel = document.querySelector(
 			`.${filterOverlayStyles.filterPanel}`,
@@ -328,7 +336,7 @@ export function updateInputDisplay(): void {
 				`.${filterOverlayStyles.filterOptionActive}`,
 			);
 			if (selectedOption) {
-				inputElement.value = selectedOption.textContent || "ทั้งหมด";
+				inputElement.value = selectedOption.textContent || "ค้นหาสินทรัพย์ และ อื่นๆ";
 			}
 		}
 	}
