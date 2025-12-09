@@ -1,11 +1,16 @@
 """Search router for hybrid search endpoint."""
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
 from app.core.config.logging import get_logger
 from app.db import get_session
-from app.schemas.search import SearchRequestSchema, SearchResponseSchema
+from app.schemas.search import (
+    PaginationSchema,
+    SearchFilterSchema,
+    SearchRequestSchema,
+    SearchResponseSchema,
+)
 from app.services.search_service import hybrid_search
 
 logger = get_logger(__name__)
@@ -16,19 +21,29 @@ router = APIRouter(
 )
 
 
-@router.post("", response_model=SearchResponseSchema)
+@router.get("", response_model=SearchResponseSchema)
 async def search_assets(
-    request: SearchRequestSchema,
+    query_text: str = "",
+    price_min: int | None = None,
+    price_max: int | None = None,
+    bedrooms_min: int | None = None,
+    asset_type_id: list[int] | None = Query(None),
+    page: int = 1,
+    page_size: int = 20,
     db: Session = Depends(get_session),
 ) -> SearchResponseSchema:
-    """
-    Hybrid search endpoint combining:
-    - Vector similarity search
-    - Text matching
-    - Attribute filters
-    - Geospatial filters
-    """
+    """Hybrid search endpoint using query parameters."""
     try:
+        request = SearchRequestSchema(
+            query_text=query_text,
+            filters=SearchFilterSchema(
+                asset_type_id=asset_type_id,
+                price_min=price_min,
+                price_max=price_max,
+                bedrooms_min=bedrooms_min,
+            ),
+            pagination=PaginationSchema(page=page, page_size=page_size),
+        )
         results, total_pages = await hybrid_search(request, db)
         return SearchResponseSchema(results=results, total_pages=total_pages)
     except RuntimeError as e:

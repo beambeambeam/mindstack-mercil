@@ -175,7 +175,9 @@ async def hybrid_search(
     count_params.pop("offset", None)
 
     total_count_result = db.execute(text(count_query), count_params).scalar_one()
-    total_pages = (total_count_result // request.pagination.page_size) + 1
+    total_pages = (
+        total_count_result + request.pagination.page_size - 1
+    ) // request.pagination.page_size
 
     # Execute main search query
     results = db.execute(final_query, params).fetchall()
