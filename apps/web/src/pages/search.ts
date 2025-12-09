@@ -5,19 +5,14 @@ import type { Asset, AssetType } from "../types/asset";
 import { extractAssetTypes, formatPrice } from "../utils/format";
 
 let allAssets: Asset[] = [];
-let assetTypes: AssetType[] = [];
 let latestParsedFilters: ReturnType<typeof getParsedFilters> = {
 	query: "",
 };
 
 async function loadInitialData(): Promise<void> {
 	try {
-		const [assetsResponse, typesResponse] = await Promise.all([
-			getAllAssets(1, 200),
-			getAssetTypes(),
-		]);
+		const assetsResponse = await getAllAssets(1, 200);
 		allAssets = assetsResponse.items;
-		assetTypes = typesResponse;
 	} catch (error) {
 		console.error("Error loading initial assets:", error);
 	}

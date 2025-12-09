@@ -9,12 +9,11 @@ import {
 	searchAssetsGET,
 } from "../../src/services/api";
 import searchStyles from "../../src/styles/modules/search.module.css";
-import type { Asset, AssetType } from "../../src/types/asset";
+import type { Asset } from "../../src/types/asset";
 import { extractAssetTypes } from "../../src/utils/format";
 import "./index.css";
 
 let allAssets: Asset[] = [];
-let assetTypes: AssetType[] = [];
 let currentPage = 1;
 let totalPages = 1;
 
@@ -70,8 +69,7 @@ async function applySearch() {
 	const pageSize = urlParams.page_size;
 
 	try {
-		const typesResponse = await getAssetTypes();
-		assetTypes = typesResponse;
+		await getAssetTypes();
 	} catch (error) {
 		console.error("Error loading asset types:", error);
 	}
@@ -224,7 +222,6 @@ function renderPagination(container: HTMLElement | null): void {
 }
 
 function navigateToPage(page: number): void {
-	const urlParams = getURLSearchParams();
 	const params = new URLSearchParams(window.location.search);
 
 	params.set("page", String(page));

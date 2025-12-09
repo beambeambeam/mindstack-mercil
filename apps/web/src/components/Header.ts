@@ -23,8 +23,6 @@ export function initHeader(): void {
 	});
 }
 
-const FILTERED_ASSET_TYPE_IDS = [3, 4, 15, 1, 5];
-
 export function renderFilterNavigation(
 	assetTypes: AssetType[],
 	onFilterChange: (filterState: FilterState) => void,
