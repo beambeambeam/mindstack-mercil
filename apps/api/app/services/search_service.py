@@ -12,6 +12,10 @@ from sentence_transformers import SentenceTransformer
 from sqlalchemy.sql import text
 from sqlmodel import Session
 
+from app.core.config.constants import (
+    EMBEDDING_MODEL_NAME,
+    GEOSPATIAL_RADIUS_METERS,
+)
 from app.core.config.logging import get_logger
 from app.schemas.search import AssetResultSchema, SearchRequestSchema
 from app.services.parser_service import parse_query_to_json
@@ -20,7 +24,7 @@ logger = get_logger(__name__)
 
 # Load embedding model once on startup
 try:
-    model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
+    model = SentenceTransformer(EMBEDDING_MODEL_NAME)
 except Exception as e:
     logger.critical(f"Could not load sentence-transformer model: {e}")
     model = None
@@ -151,10 +155,11 @@ async def hybrid_search(
             "ST_DWithin("
             "assets.location_geom::geography, "
             "ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography, "
-            "10000)"
+            ":radius_meters)"
         )
         params["lon"] = location_coords[1]
         params["lat"] = location_coords[0]
+        params["radius_meters"] = GEOSPATIAL_RADIUS_METERS
 
     # Combine WHERE clauses
     if where_clauses:
@@ -174,13 +179,15 @@ async def hybrid_search(
     count_params.pop("limit", None)
     count_params.pop("offset", None)
 
-    total_count_result = db.execute(text(count_query), count_params).scalar_one()
+    total_count_statement = text(count_query).bindparams(**count_params)
+    total_count_result = db.exec(total_count_statement).scalar_one()
     total_pages = (
         total_count_result + request.pagination.page_size - 1
     ) // request.pagination.page_size
 
     # Execute main search query
-    results = db.execute(final_query, params).fetchall()
+    final_statement = final_query.bindparams(**params)
+    results = db.exec(final_statement).fetchall()
 
     # Format results
     formatted_results = [
