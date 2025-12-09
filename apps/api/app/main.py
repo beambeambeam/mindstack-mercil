@@ -4,17 +4,16 @@ This file initializes the FastAPI app, sets up logging,
 CORS middleware, and includes API routers.
 """
 
-import logging
 import time
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.config.logging import get_logger, setup_logging
-from .routers import health
+from .routers import health, search
 
 # Setup logging configuration
 setup_logging()
@@ -104,6 +103,7 @@ async def log_requests(request: Request, call_next):
 
 # Include routers
 app.include_router(health.router)
+app.include_router(search.router)
 
 
 @app.get("/")
