@@ -41,7 +41,7 @@ def embed_record(doc: str) -> list[float] | None:
     if embedding_model is None:
         logger.error("Embedding model is not loaded; skipping vector generation.")
         return None
-    return embedding_model.encode(doc).tolist()
+    return embedding_model.encode(doc, show_progress_bar=False).tolist()
 
 
 def build_doc(record: dict[str, object]) -> str:

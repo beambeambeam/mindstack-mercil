@@ -35,11 +35,19 @@ geolocator = Nominatim(user_agent="proptech-ai-backend")
 def get_coords(location_text: str) -> tuple[float, float] | None:
     """Uses Nominatim to get (lat, lon) for a location name."""
     try:
-        location = geolocator.geocode(f"{location_text}, Thailand")
+        search_query = f"{location_text}, Thailand"
+        logger.debug(f"Geocoding: {search_query}")
+        location = geolocator.geocode(search_query)
         if location:
-            return (location.latitude, location.longitude)
+            coords = (location.latitude, location.longitude)
+            logger.info(f"Geocoded '{location_text}' to {coords}")
+            return coords
+        else:
+            logger.warning(f"Geocoding failed for: {location_text}")
     except GeocoderUnavailable:
         logger.warning("Geocoder service is unavailable.")
+    except Exception as e:
+        logger.error(f"Error geocoding '{location_text}': {e}")
     return None
 
 
@@ -140,13 +148,29 @@ async def hybrid_search(
 
     # Generate query vector
     semantic_text = str(parsed_query.get("semantic_query") or request.query_text or "")
-    query_vector = model.encode(semantic_text).tolist()
+    query_vector = model.encode(semantic_text, show_progress_bar=False).tolist()
 
     # Geocode location
     location_coords = None
     location_text = parsed_query.get("location_text")
     if location_text and isinstance(location_text, str):
         location_coords = get_coords(location_text)
+
+    # Fallback: if parser didn't extract location but query is simple (likely a location name),
+    # try geocoding the original query text directly
+    if not location_coords and request.query_text:
+        query_stripped = request.query_text.strip()
+        # If query is a single word or short phrase (likely a location name), try geocoding it
+        if len(query_stripped.split()) <= 3 and not any(
+            char.isdigit() for char in query_stripped
+        ):
+            logger.info(
+                f"Parser didn't extract location, trying direct geocoding for: "
+                f"{query_stripped}"
+            )
+            location_coords = get_coords(query_stripped)
+            if location_coords:
+                logger.info(f"Successfully geocoded '{query_stripped}' to {location_coords}")
 
     # Combine filters from request and parser
     raw_parsed_filters = parsed_query.get("filters")
