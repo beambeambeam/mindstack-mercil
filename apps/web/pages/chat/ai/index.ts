@@ -1,4 +1,5 @@
 import { chatWithAI } from "../../../src/services/api";
+import "./index.css";
 
 interface ChatMessage {
 	role: "user" | "ai";
