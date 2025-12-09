@@ -1,20 +1,20 @@
 import { renderAssetCards } from "../../src/components/AssetCard";
 import {
+	createInlineFilters,
+	type FilterState,
+} from "../../src/components/InlineFilters";
+import {
 	getAllAssets,
 	getAssetTypes,
 	searchAssetsGET,
 } from "../../src/services/api";
-import { getParsedFilters, hybridSearchAPI } from "../../src/services/search";
 import searchStyles from "../../src/styles/modules/search.module.css";
 import type { Asset, AssetType } from "../../src/types/asset";
-import { extractAssetTypes, formatPrice } from "../../src/utils/format";
+import { extractAssetTypes } from "../../src/utils/format";
 import "./index.css";
 
 let allAssets: Asset[] = [];
 let assetTypes: AssetType[] = [];
-let latestParsedFilters: ReturnType<typeof getParsedFilters> = {
-	query: "",
-};
 let currentPage = 1;
 let totalPages = 1;
 
@@ -49,10 +49,6 @@ function getURLSearchParams(): {
 }
 
 async function applySearch() {
-	const searchInput = document.getElementById(
-		"search-input",
-	) as HTMLInputElement;
-	const searchTerm = searchInput ? searchInput.value.trim() : "";
 	const container = document.getElementById("asset-card-container");
 	const paginationContainer = document.getElementById("pagination-container");
 
@@ -123,86 +119,16 @@ async function applySearch() {
 		return;
 	}
 
-	if (!searchTerm) {
-		try {
-			const assetsResponse = await getAllAssets(currentPage, pageSize);
-			allAssets = assetsResponse.items;
-			const assetTypesForDisplay = extractAssetTypes(allAssets);
-			renderAssetCards(allAssets, assetTypesForDisplay, container);
-			if (paginationContainer) {
-				paginationContainer.innerHTML = "";
-			}
-		} catch (error) {
-			console.error("Error loading assets:", error);
-		}
-		return;
-	}
-
-	container.innerHTML = `<p class="${searchStyles.loadingMessage}">กำลังค้นหาทรัพย์สินอัจฉริยะ...</p>`;
-
-	latestParsedFilters = getParsedFilters(searchTerm);
-
-	const results = await hybridSearchAPI(searchTerm);
-
-	if (results.length === 0) {
-		let zeroResultHTML = `<p class="${searchStyles.noResultsMessage}">ไม่พบผลลัพธ์ที่เกี่ยวข้องกับ "${searchTerm}"</p>`;
-
-		const queryHasFilters =
-			latestParsedFilters.price_max || latestParsedFilters.radius_km;
-
-		if (queryHasFilters) {
-			const newPrice = latestParsedFilters.price_max
-				? formatPrice(latestParsedFilters.price_max * 1.1)
-				: null;
-			const newRadius = latestParsedFilters.radius_km
-				? (latestParsedFilters.radius_km * 1.5).toFixed(0)
-				: null;
-			const baseQuery = latestParsedFilters.query.trim();
-
-			let alternativePriceQuery = "";
-			if (latestParsedFilters.price_max) {
-				alternativePriceQuery = `${baseQuery} ไม่เกิน ${newPrice} บาท`;
-			}
-
-			let alternativeRadiusQuery = "";
-			if (
-				latestParsedFilters.radius_km &&
-				latestParsedFilters.location_keyword
-			) {
-				alternativeRadiusQuery = `${baseQuery} ในระยะ ${newRadius} km จาก ${latestParsedFilters.location_keyword}`;
-			} else if (latestParsedFilters.radius_km) {
-				alternativeRadiusQuery = `${baseQuery} ในระยะ ${newRadius} km`;
-			}
-
-			zeroResultHTML += `
-        <div class="${searchStyles.alternativeOptions}">
-            <h3 class="${searchStyles.suggestionTitle}">💡 ข้อเสนอแนะทางเลือก:</h3>
-            <p>เราไม่พบทรัพย์สินที่ตรงตามเงื่อนไขทุกประการ แต่คุณอาจสนใจ:</p>
-            <ul>
-                ${
-									newPrice && alternativePriceQuery
-										? `<li><a href="#" onclick="window.searchByAlternative('${alternativePriceQuery}', event)">ค้นหาโดยเพิ่มงบประมาณเป็น <strong>${newPrice} บาท</strong> (เพิ่ม 10%)</a></li>`
-										: ""
-								}
-                ${
-									newRadius && alternativeRadiusQuery
-										? `<li><a href="#" onclick="window.searchByAlternative('${alternativeRadiusQuery}', event)">ค้นหาโดยขยายรัศมีเป็น <strong>${newRadius} กม.</strong> (ขยาย 50%)</a></li>`
-										: ""
-								}
-            </ul>
-        </div>
-      `;
-		}
-		container.innerHTML = zeroResultHTML;
-		if (paginationContainer) {
-			paginationContainer.innerHTML = "";
-		}
-	} else {
+	try {
+		const assetsResponse = await getAllAssets(currentPage, pageSize);
+		allAssets = assetsResponse.items;
 		const assetTypesForDisplay = extractAssetTypes(allAssets);
-		renderAssetCards(results, assetTypesForDisplay, container);
+		renderAssetCards(allAssets, assetTypesForDisplay, container);
 		if (paginationContainer) {
 			paginationContainer.innerHTML = "";
 		}
+	} catch (error) {
+		console.error("Error loading assets:", error);
 	}
 }
 
@@ -307,50 +233,76 @@ function navigateToPage(page: number): void {
 	window.location.href = newUrl;
 }
 
+function buildSearchURL(filterState: FilterState): string {
+	const params = new URLSearchParams();
+
+	if (filterState.queryText && filterState.queryText.trim() !== "") {
+		params.append("query_text", filterState.queryText.trim());
+	}
+
+	if (filterState.assetType !== "all") {
+		const assetTypeId = parseInt(filterState.assetType, 10);
+		if (!Number.isNaN(assetTypeId)) {
+			params.append("asset_type_id", String(assetTypeId));
+		}
+	}
+
+	if (filterState.priceMin !== undefined) {
+		params.append("price_min", String(filterState.priceMin));
+	}
+
+	if (filterState.priceMax !== undefined) {
+		params.append("price_max", String(filterState.priceMax));
+	}
+
+	if (filterState.bedroomsMin !== undefined) {
+		params.append("bedrooms_min", String(filterState.bedroomsMin));
+	}
+
+	const queryString = params.toString();
+	return queryString ? `/pages/search/?${queryString}` : "/pages/search/";
+}
+
+function urlParamsToFilterState(
+	urlParams: ReturnType<typeof getURLSearchParams>,
+): FilterState {
+	return {
+		queryText: urlParams.query_text,
+		assetType: urlParams.asset_type_id
+			? String(urlParams.asset_type_id)
+			: "all",
+		priceMin: urlParams.price_min,
+		priceMax: urlParams.price_max,
+		bedroomsMin: urlParams.bedrooms_min,
+	};
+}
+
 export function init() {
 	console.log("Search page initialized");
 
-	const searchInput = document.getElementById(
-		"search-input",
-	) as HTMLInputElement;
-	const searchButton = document.getElementById("search-button");
-
+	const inlineFiltersContainer = document.getElementById(
+		"inline-filters-container",
+	);
 	const urlParams = getURLSearchParams();
-	if (searchInput && urlParams.query_text) {
-		searchInput.value = urlParams.query_text;
-	}
 
-	if (searchInput) {
-		searchInput.addEventListener("keyup", (e) => {
-			if (e.key === "Enter") {
-				applySearch();
-			} else if (
-				searchInput.value.trim().length > 2 ||
-				searchInput.value.trim().length === 0
-			) {
-				applySearch();
-			}
-		});
+	if (inlineFiltersContainer) {
+		getAssetTypes()
+			.then((types) => {
+				const initialFilterState = urlParamsToFilterState(urlParams);
+				createInlineFilters(
+					inlineFiltersContainer,
+					types,
+					initialFilterState,
+					(filterState: FilterState) => {
+						const searchUrl = buildSearchURL(filterState);
+						window.location.href = searchUrl;
+					},
+				);
+			})
+			.catch((error) => {
+				console.error("Error loading asset types for inline filters:", error);
+			});
 	}
-
-	if (searchButton) {
-		searchButton.addEventListener("click", applySearch);
-	}
-
-	(
-		window as Window & {
-			searchByAlternative?: (query: string, event: Event) => void;
-		}
-	).searchByAlternative = (alternativeQuery: string, event: Event) => {
-		if (event) event.preventDefault();
-		if (searchInput) {
-			searchInput.value = alternativeQuery;
-			applySearch();
-		}
-	};
 
 	applySearch();
-	if (searchInput) {
-		searchInput.focus();
-	}
 }

@@ -1,0 +1,135 @@
+.filterForm {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 20px;
+	padding: 30px;
+	background-color: #f9f9f9;
+	border-radius: 8px;
+	margin-bottom: 30px;
+}
+
+.filterSection {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.filterLabel {
+	font-size: 1em;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 5px;
+}
+
+.filterOptions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.filterOption {
+	padding: 8px 16px;
+	border: 2px solid #ddd;
+	border-radius: 6px;
+	background-color: white;
+	color: #555;
+	cursor: pointer;
+	font-size: 0.9em;
+	transition: all 0.2s;
+}
+
+.filterOption:hover {
+	border-color: #007bff;
+	color: #007bff;
+}
+
+.filterOptionActive {
+	background-color: #007bff;
+	color: white;
+	border-color: #007bff;
+	font-weight: bold;
+}
+
+.priceInputs {
+	display: flex;
+	gap: 10px;
+}
+
+.priceInput,
+.numberInput,
+.textInput {
+	padding: 10px 15px;
+	border: 2px solid #ddd;
+	border-radius: 6px;
+	font-size: 1em;
+	width: 100%;
+	transition: border-color 0.2s;
+	background-color: white;
+}
+
+.priceInput:focus,
+.numberInput:focus,
+.textInput:focus {
+	outline: none;
+	border-color: #007bff;
+}
+
+.priceInputs .priceInput {
+	flex: 1;
+}
+
+.searchButtonSection {
+	display: flex;
+	justify-content: flex-end;
+	margin-top: 10px;
+}
+
+.searchButton {
+	padding: 12px 30px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 1em;
+	font-weight: bold;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.searchButton:hover {
+	background-color: #0056b3;
+}
+
+.searchButton:active {
+	background-color: #004085;
+}
+
+@media (max-width: 768px) {
+	.filterForm {
+		grid-template-columns: 1fr;
+		padding: 20px;
+		gap: 15px;
+	}
+
+	.filterOptions {
+		gap: 8px;
+	}
+
+	.filterOption {
+		padding: 6px 12px;
+		font-size: 0.85em;
+	}
+
+	.priceInputs {
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.searchButtonSection {
+		justify-content: stretch;
+	}
+
+	.searchButton {
+		width: 100%;
+	}
+}
