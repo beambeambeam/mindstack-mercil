@@ -158,9 +158,7 @@ async def detailed_health_check() -> DetailedHealthCheckResponse:
 
     overall_status: Literal["healthy", "degraded", "unhealthy"] = "healthy"
     unhealthy_count = sum(
-        1
-        for service_status in [db_status, ollama_status]
-        if service_status.status == "unhealthy"
+        1 for service_status in [db_status, ollama_status] if service_status.status == "unhealthy"
     )
     if unhealthy_count == 2:
         overall_status = "unhealthy"
@@ -184,3 +182,6 @@ async def detailed_health_check() -> DetailedHealthCheckResponse:
         )
 
     return health_response
+
+
+# test
