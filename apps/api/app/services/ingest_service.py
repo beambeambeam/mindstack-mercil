@@ -10,6 +10,7 @@ from sentence_transformers import SentenceTransformer
 from sqlalchemy.sql import text
 from sqlmodel import Session
 
+from app.core.config.constants import INGESTION_BATCH_SIZE
 from app.core.config.logging import get_logger
 from app.models.asset import Asset, AssetType
 
@@ -132,7 +133,7 @@ def upsert_assets(
 
         processed += 1
 
-        if idx % 100 == 0:
+        if idx % INGESTION_BATCH_SIZE == 0:
             session.commit()
             logger.info("Committed %s assets...", idx)
 

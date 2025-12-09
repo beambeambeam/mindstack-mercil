@@ -12,7 +12,11 @@ from langchain_ollama import ChatOllama
 from langchain_postgres import PGVector
 
 from app.core.config import settings
-from app.core.config.constants import EMBEDDING_MODEL_NAME, LLM_MODEL_NAME
+from app.core.config.constants import (
+    EMBEDDING_MODEL_NAME,
+    LLM_MODEL_NAME,
+    VECTOR_SEARCH_TOP_K,
+)
 from app.core.config.logging import get_logger
 
 logger = get_logger(__name__)
@@ -62,7 +66,7 @@ try:
     )
     logger.info("PGVector connected successfully")
 
-    retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+    retriever = vector_store.as_retriever(search_kwargs={"k": VECTOR_SEARCH_TOP_K})
     logger.info("Retriever created successfully")
 
     template = """

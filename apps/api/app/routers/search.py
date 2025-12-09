@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session
 
+from app.core.config.constants import DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE
 from app.core.config.logging import get_logger
 from app.db import get_session
 from app.schemas.search import (
@@ -28,8 +29,8 @@ async def search_assets_get(
     price_max: int | None = None,
     bedrooms_min: int | None = None,
     asset_type_id: list[int] | None = Query(None),
-    page: int = 1,
-    page_size: int = 20,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE),
     db: Session = Depends(get_session),
 ) -> SearchResponseSchema:
     """Hybrid search endpoint using query parameters."""
