@@ -38,6 +38,7 @@ async function loadAssetDetails() {
 	}
 
 	try {
+		console.log(`[DETAIL] Tracking detail view for asset ${selectedAsset.id}`);
 		await trackRecommendationAction(selectedAsset.id, "click");
 	} catch (error) {
 		console.error("Failed to track detail view:", error);

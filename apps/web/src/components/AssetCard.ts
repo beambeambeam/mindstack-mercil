@@ -55,10 +55,15 @@ export function renderAssetCards(
 			if (assetIdAttr) {
 				const assetId = parseInt(assetIdAttr, 10);
 				if (!Number.isNaN(assetId)) {
+					console.log(`[CLICK] Asset card clicked: ${assetId}`);
 					trackRecommendationAction(assetId, "click").catch((error) => {
 						console.error("Failed to track click:", error);
 					});
+				} else {
+					console.warn(`[CLICK] Invalid asset ID: ${assetIdAttr}`);
 				}
+			} else {
+				console.warn("[CLICK] No data-asset-id attribute found on button");
 			}
 		});
 	});

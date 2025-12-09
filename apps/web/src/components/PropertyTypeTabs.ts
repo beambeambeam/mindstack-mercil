@@ -5,9 +5,11 @@ const FILTERED_ASSET_TYPE_IDS = [3, 4, 15, 1, 5];
 export function createPropertyTypeTabs(
 	assetTypes: AssetType[],
 	onTypeChange: (assetType: string) => void,
+	titleElement?: Element | null,
 ): void {
-	const titleElement = document.querySelector(".content-container h1");
-	if (!titleElement) return;
+	const targetTitleElement =
+		titleElement || document.querySelector(".content-container h1");
+	if (!targetTitleElement) return;
 
 	const filteredTypes = assetTypes
 		.filter((type) => FILTERED_ASSET_TYPE_IDS.includes(type.id))
@@ -17,12 +19,15 @@ export function createPropertyTypeTabs(
 			return indexA - indexB;
 		});
 
-	let tabsContainer = document.getElementById("property-type-tabs");
+	const tabsId = titleElement
+		? "recommended-property-type-tabs"
+		: "property-type-tabs";
+	let tabsContainer = document.getElementById(tabsId);
 	if (!tabsContainer) {
 		tabsContainer = document.createElement("div");
-		tabsContainer.id = "property-type-tabs";
+		tabsContainer.id = tabsId;
 		tabsContainer.className = "property-type-tabs";
-		titleElement.insertAdjacentElement("afterend", tabsContainer);
+		targetTitleElement.insertAdjacentElement("afterend", tabsContainer);
 	}
 
 	tabsContainer.innerHTML = `

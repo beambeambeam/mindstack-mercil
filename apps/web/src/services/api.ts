@@ -2,6 +2,7 @@ import { env } from "../env";
 import type {
 	Asset,
 	AssetListResponse,
+	AssetResult,
 	AssetType,
 	AssetTypeListResponse,
 	SearchRequest,
@@ -202,6 +203,9 @@ export async function trackRecommendationAction(
 ): Promise<void> {
 	const url = `${API_URL}/recommend/track`;
 	const clientId = getClientId();
+	console.log(
+		`[TRACK] Tracking ${actionType} for asset ${assetId} with client ID: ${clientId}`,
+	);
 
 	try {
 		const response = await fetch(url, {
@@ -216,14 +220,50 @@ export async function trackRecommendationAction(
 			}),
 		});
 
-		if (!response.ok) {
+		if (response.ok) {
+			console.log(
+				`[TRACK] Successfully tracked ${actionType} for asset ${assetId}`,
+			);
+		} else {
 			const text = await response.text();
 			console.error(
-				`Failed to track recommendation action ${response.status} ${response.statusText} from ${url}`,
+				`[TRACK] Failed to track recommendation action ${response.status} ${response.statusText} from ${url}`,
 			);
 			console.error("Response:", text.substring(0, 500));
 		}
 	} catch (error) {
-		console.error("Error tracking recommendation action:", error);
+		console.error("[TRACK] Error tracking recommendation action:", error);
 	}
+}
+
+export async function getUserRecommendations(): Promise<AssetResult[]> {
+	const url = `${API_URL}/recommend/user`;
+	const clientId = getClientId();
+	console.log("Fetching recommendations with client ID:", clientId);
+
+	const response = await fetch(url, {
+		headers: {
+			"X-Client-ID": clientId,
+		},
+	});
+
+	console.log("Recommendations API response status:", response.status);
+
+	if (!response.ok) {
+		const text = await response.text();
+		console.error(
+			`API Error ${response.status} ${response.statusText} from ${url}`,
+		);
+		console.error("Response:", text.substring(0, 500));
+		if (response.status === 404) {
+			return [];
+		}
+		throw new Error(
+			`API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+		);
+	}
+
+	const result = await parseJsonResponse<AssetResult[]>(response, url);
+	console.log("Parsed recommendations:", result);
+	return result;
 }
