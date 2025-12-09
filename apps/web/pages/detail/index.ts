@@ -1,5 +1,8 @@
 import { initMap } from "../../src/components/Map";
-import { getAssetById } from "../../src/services/api";
+import {
+	getAssetById,
+	trackRecommendationAction,
+} from "../../src/services/api";
 import detailStyles from "../../src/styles/modules/detail.module.css";
 import type { Asset } from "../../src/types/asset";
 import { formatPrice } from "../../src/utils/format";
@@ -32,6 +35,12 @@ async function loadAssetDetails() {
 			detailNameEl.innerText = "ไม่พบทรัพย์สินนี้";
 		}
 		return;
+	}
+
+	try {
+		await trackRecommendationAction(selectedAsset.id, "click");
+	} catch (error) {
+		console.error("Failed to track detail view:", error);
 	}
 
 	const titleEl = document.getElementById("asset-title");

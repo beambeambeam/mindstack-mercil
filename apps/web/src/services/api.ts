@@ -7,6 +7,7 @@ import type {
 	SearchRequest,
 	SearchResponse,
 } from "../types/asset";
+import { getClientId } from "../utils/clientId";
 
 const API_URL = env.VITE_API_URL;
 
@@ -193,4 +194,36 @@ export async function getAssetTypes(): Promise<AssetType[]> {
 
 	const data = await parseJsonResponse<AssetTypeListResponse>(response, url);
 	return data.items;
+}
+
+export async function trackRecommendationAction(
+	assetId: number,
+	actionType: "click" | "save",
+): Promise<void> {
+	const url = `${API_URL}/recommend/track`;
+	const clientId = getClientId();
+
+	try {
+		const response = await fetch(url, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"X-Client-ID": clientId,
+			},
+			body: JSON.stringify({
+				asset_id: assetId,
+				action_type: actionType,
+			}),
+		});
+
+		if (!response.ok) {
+			const text = await response.text();
+			console.error(
+				`Failed to track recommendation action ${response.status} ${response.statusText} from ${url}`,
+			);
+			console.error("Response:", text.substring(0, 500));
+		}
+	} catch (error) {
+		console.error("Error tracking recommendation action:", error);
+	}
 }

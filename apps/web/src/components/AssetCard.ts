@@ -1,3 +1,4 @@
+import { trackRecommendationAction } from "../services/api";
 import type { Asset, AssetType } from "../types/asset";
 import { formatPrice } from "../utils/format";
 
@@ -39,10 +40,26 @@ export function renderAssetCards(
           <p class="asset-code-text">รหัสทรัพย์: ${property.asset_code}</p>
           <p class="price-value">${price} บาท</p>
 
-          <a href="${detailURL}" class="bid-button">เข้าร่วมประมูล →</a>
+          <a href="${detailURL}" class="bid-button" data-asset-id="${property.id}">เข้าร่วมประมูล →</a>
         </div>
       </div>
     `;
 		container.innerHTML += cardHTML;
+	});
+
+	container.querySelectorAll(".bid-button").forEach((button) => {
+		button.addEventListener("click", (e) => {
+			const assetIdAttr = (e.currentTarget as HTMLElement).getAttribute(
+				"data-asset-id",
+			);
+			if (assetIdAttr) {
+				const assetId = parseInt(assetIdAttr, 10);
+				if (!Number.isNaN(assetId)) {
+					trackRecommendationAction(assetId, "click").catch((error) => {
+						console.error("Failed to track click:", error);
+					});
+				}
+			}
+		});
 	});
 }
