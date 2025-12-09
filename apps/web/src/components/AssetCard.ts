@@ -23,7 +23,7 @@ export function renderAssetCards(
 		const typeName = typeInfo.name_th;
 
 		const price = formatPrice(property.price);
-		const detailURL = `/pages/detail/?id=${property.id}`;
+		const detailURL = `/detail/?id=${property.id}`;
 		const name = property.name_th || "ไม่ระบุชื่อ";
 
 		const cardHTML = `

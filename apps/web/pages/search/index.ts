@@ -229,7 +229,7 @@ function navigateToPage(page: number): void {
 
 	params.set("page", String(page));
 
-	const newUrl = `/pages/search/?${params.toString()}`;
+	const newUrl = `/search/?${params.toString()}`;
 	window.location.href = newUrl;
 }
 
@@ -260,7 +260,7 @@ function buildSearchURL(filterState: FilterState): string {
 	}
 
 	const queryString = params.toString();
-	return queryString ? `/pages/search/?${queryString}` : "/pages/search/";
+	return queryString ? `/search/?${queryString}` : "/search";
 }
 
 function urlParamsToFilterState(

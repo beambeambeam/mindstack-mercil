@@ -410,9 +410,7 @@ function navigateToSearch(): void {
 	}
 
 	const queryString = params.toString();
-	const searchUrl = queryString
-		? `/pages/search/?${queryString}`
-		: "/pages/search/";
+	const searchUrl = queryString ? `/search/?${queryString}` : "/search";
 
 	window.location.href = searchUrl;
 }

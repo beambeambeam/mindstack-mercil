@@ -1,7 +1,7 @@
 export function initChatButton(): void {
 	const path = window.location.pathname;
 
-	if (path.includes("/pages/chat/ai/") || path.includes("/chat/ai")) {
+	if (path.includes("/chat/ai")) {
 		return;
 	}
 
@@ -10,7 +10,7 @@ export function initChatButton(): void {
 
 	const button = document.createElement("a");
 	button.id = "floating-chat-button";
-	button.href = "/pages/chat/ai/";
+	button.href = "/chat/ai/";
 	button.className = "floating-chat-button";
 	button.innerHTML = "💬";
 	button.setAttribute("aria-label", "ไปยังหน้าแชท");

@@ -12,16 +12,22 @@ initAuthModal();
 initHeader();
 initChatButton();
 
-const path = window.location.pathname;
-
-if (path.includes("/pages/search/") || path.includes("/search")) {
-	initSearch();
-} else if (path.includes("/pages/chat/ai/") || path.includes("/chat/ai")) {
+if (document.getElementById("chat-messages")) {
 	initChatAi();
-} else if (path.includes("/pages/chat/") || path.includes("/chat")) {
+} else if (document.querySelector(".chat-options-container")) {
 	initChat();
-} else if (path.includes("/pages/detail/") || path.includes("/detail")) {
+} else if (document.getElementById("asset-detail-content")) {
 	initDetail();
-} else {
+} else if (
+	document.getElementById("inline-filters-container") ||
+	document.getElementById("pagination-container")
+) {
+	initSearch();
+} else if (
+	document.getElementById("asset-card-container") &&
+	!document.getElementById("inline-filters-container")
+) {
 	initIndex();
+} else {
+	console.warn(`Unknown page structure, path: ${window.location.pathname}`);
 }
