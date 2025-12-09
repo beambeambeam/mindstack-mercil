@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.config.logging import get_logger, setup_logging
-from .routers import assets, health, ingest, search
+from .routers import assets, health, ingest, recommend, search
 
 # Setup logging configuration
 setup_logging()
@@ -105,6 +105,7 @@ async def log_requests(request: Request, call_next):
 app.include_router(health.router)
 app.include_router(assets.router)
 app.include_router(ingest.router)
+app.include_router(recommend.router)
 app.include_router(search.router)
 
 

@@ -1,5 +1,7 @@
 """Search request and response schemas for hybrid search API."""
 
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -46,3 +48,10 @@ class SearchResponseSchema(BaseModel):
 
     results: list[AssetResultSchema]
     total_pages: int
+
+
+class TrackActionSchema(BaseModel):
+    """Payload for tracking user actions that update recommendation profile."""
+
+    asset_id: int
+    action_type: Literal["click", "save"]
