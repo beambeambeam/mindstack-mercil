@@ -267,3 +267,37 @@ export async function getUserRecommendations(): Promise<AssetResult[]> {
 	console.log("Parsed recommendations:", result);
 	return result;
 }
+
+export interface ChatResponse {
+	response_text: string;
+}
+
+export async function chatWithAI(
+	message: string,
+	sessionId: string | null,
+): Promise<ChatResponse> {
+	const url = `${API_URL}/chat/ai`;
+	const response = await fetch(url, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			message,
+			session_id: sessionId,
+		}),
+	});
+
+	if (!response.ok) {
+		const text = await response.text();
+		console.error(
+			`API Error ${response.status} ${response.statusText} from ${url}`,
+		);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+		);
+	}
+
+	return parseJsonResponse<ChatResponse>(response, url);
+}

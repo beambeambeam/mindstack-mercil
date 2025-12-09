@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>แชทกับ AI Bot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./index.css" />
+  </head>
+  <body>
+    <header class="main-header">
+      <a href="/pages/chat/" class="logo">← กลับ</a>
+      <nav class="asset-filter-nav"></nav>
+      <div class="user-actions">
+        <button class="action-btn login-btn">เข้าร่วม / ลงทะเบียน</button>
+      </div>
+    </header>
+
+    <main class="chat-container">
+      <div class="chat-header">
+        <h1>🤖 แชทกับ AI Bot</h1>
+        <p>สอบถามคำถามทั่วไปเกี่ยวกับการประมูลอสังหาริมทรัพย์</p>
+      </div>
+
+      <div id="chat-messages" class="chat-messages">
+        <div class="message ai-message">
+          <div class="message-content">
+            <p>
+              สวัสดีครับ! ผมเป็น AI Bot
+              ที่พร้อมช่วยตอบคำถามเกี่ยวกับการประมูลอสังหาริมทรัพย์
+              คุณต้องการทราบอะไรบ้างครับ?
+            </p>
+          </div>
+          <div class="message-time"></div>
+        </div>
+      </div>
+
+      <div
+        id="loading-indicator"
+        class="loading-indicator"
+        style="display: none"
+      >
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <input
+          type="text"
+          id="chat-input"
+          class="chat-input"
+          placeholder="พิมพ์ข้อความของคุณ..."
+          autocomplete="off"
+        />
+        <button id="send-button" class="send-button" aria-label="ส่งข้อความ">
+          ส่ง
+        </button>
+      </div>
+    </main>
+
+    <div class="bottom-nav-bar">
+      <a href="/pages/index/" class="nav-item">
+        <span class="icon">🏠</span>
+        <span class="label">หน้าหลัก</span>
+      </a>
+      <a href="/pages/search/" class="nav-item">
+        <span class="icon">🔍</span>
+        <span class="label">ค้นหา</span>
+      </a>
+      <a href="/pages/chat/" class="nav-item active">
+        <span class="icon">💬</span>
+        <span class="label">ตอบแชท</span>
+      </a>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

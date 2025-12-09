@@ -12,6 +12,7 @@ export default defineConfig({
 				main: resolve(__dirname, "pages/index/index.html"),
 				search: resolve(__dirname, "pages/search/index.html"),
 				chat: resolve(__dirname, "pages/chat/index.html"),
+				chatAi: resolve(__dirname, "pages/chat/ai/index.html"),
 				detail: resolve(__dirname, "pages/detail/index.html"),
 			},
 		},
