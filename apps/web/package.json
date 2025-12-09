@@ -1,8 +1,22 @@
 {
-  "name": "web",
-  "version": "1.0.0",
-  "scripts": {
-    "dev": "npx serve -l 3001",
-    "start": "npx serve -l 3001"
-  }
+	"name": "web",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"start": "vite preview",
+		"lint": "biome check ."
+	},
+	"dependencies": {
+		"leaflet": "^1.9.4",
+		"zod": "^4.1.13"
+	},
+	"devDependencies": {
+		"@types/leaflet": "^1.9.8",
+		"@types/node": "^22.10.2",
+		"typescript": "~5.9.3",
+		"vite": "^7.2.4"
+	}
 }

@@ -1,0 +1,73 @@
+---
+globs: **/services/*.ts
+---
+
+# Service Layer Patterns
+
+## API Service Pattern
+
+All API calls go through [src/services/api.ts](mdc:apps/web/src/services/api.ts). Follow these patterns:
+
+### Function Structure
+
+```typescript
+export async function getAssetById(assetId: number): Promise<Asset> {
+  const url = `${API_URL}/assets/${assetId}`;
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    const text = await response.text();
+    console.error(`API Error ${response.status} ${response.statusText} from ${url}`);
+    console.error("Response:", text.substring(0, 500));
+    throw new Error(
+      `API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+    );
+  }
+  
+  return parseJsonResponse<Asset>(response, url);
+}
+```
+
+### Error Handling
+
+- Always check `response.ok` before parsing
+- Log detailed error information (status, URL, response preview)
+- Use `parseJsonResponse` helper for JSON parsing with error handling
+- Provide helpful error messages that include API URL
+- Handle network errors gracefully
+
+### Environment Configuration
+
+- Use [src/env.ts](mdc:apps/web/src/env.ts) for environment variables
+- Access API URL via `env.VITE_API_URL`
+- Validate env vars with Zod schemas
+
+### Request Patterns
+
+- POST requests: Include `Content-Type: application/json` header
+- GET requests: Use query parameters in URL
+- Use `JSON.stringify()` for request bodies
+- Use `Promise.all()` for parallel requests
+
+### Response Parsing
+
+- Use generic `parseJsonResponse<T>()` helper
+- Check content-type header before parsing JSON
+- Handle parse errors with detailed logging
+- Return typed responses matching API schemas
+
+## Search Service Pattern
+
+See [src/services/search.ts](mdc:apps/web/src/services/search.ts):
+
+- Implement hybrid search (API + fallback)
+- Parse query filters using utility functions
+- Handle fallback to simple text search on API errors
+- Return consistent `Asset[]` arrays
+
+## Service Organization
+
+- One service file per domain (api.ts, search.ts)
+- Export individual functions, not objects
+- Use async/await, not promises
+- Type all parameters and return values

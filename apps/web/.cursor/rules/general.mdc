@@ -1,0 +1,58 @@
+---
+alwaysApply: true
+---
+
+# General Web App Rules
+
+## Code Style
+
+- Use tabs for indentation
+- Use semicolons
+- Prefer `const` over `let`
+- Use arrow functions for callbacks
+- Use template literals for strings
+- Use optional chaining (`?.`) and nullish coalescing (`??`)
+
+## Comments
+
+- Only comment when necessary to explain intent, reasoning, or complex logic
+- Never comment every line
+- Clean, self-explanatory code is preferred
+- Explain unidiomatic code in comments
+- Add comments when fixing bugs
+
+## Error Handling
+
+- Always handle errors with try/catch for async operations
+- Show user-friendly error messages in Thai
+- Log errors to console for debugging
+- Include context in error messages (API URL, operation, etc.)
+- Provide fallback UI when operations fail
+
+## User Experience
+
+- Show loading states during async operations
+- Use Thai language for user-facing text
+- Provide helpful error messages
+- Handle edge cases gracefully (empty results, network errors, etc.)
+
+## Build Configuration
+
+- Vite config: [vite.config.ts](mdc:apps/web/vite.config.ts)
+- Multi-page build with entries in `pages/` directory
+- TypeScript config: [tsconfig.json](mdc:apps/web/tsconfig.json)
+- Strict TypeScript settings enabled
+
+## Dependencies
+
+- Leaflet for maps
+- Zod for runtime validation
+- Vite for build tooling
+- TypeScript for type safety
+
+## Development
+
+- Run dev server: `pnpm dev` (port 3001)
+- Build: `pnpm build`
+- Lint: `pnpm lint` (Biome)
+- Type check: `tsc` (via build script)

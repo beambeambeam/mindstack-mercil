@@ -48,3 +48,15 @@ class AssetResponse(AssetBase):
 class AssetListResponse(BaseModel):
     items: list[AssetResponse]
     total: int
+
+
+class AssetTypeResponse(BaseModel):
+    id: int
+    name_th: str
+    name_en: str
+
+    model_config = {"from_attributes": True}
+
+
+class AssetTypeListResponse(BaseModel):
+    items: list[AssetTypeResponse]

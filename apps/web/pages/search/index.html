@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ค้นหาทรัพย์สิน | MERCIL MYAPP</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    crossorigin=""/>
+</head>
+<body>
+
+    <header class="main-header">
+        <a href="/" class="logo">MERCIL</a>
+
+        <nav class="asset-filter-nav">
+        </nav>
+
+        <div class="user-actions">
+            <button class="action-btn login-btn">เข้าร่วม / ลงทะเบียน</button>
+        </div>
+    </header>
+
+    <main class="content-container">
+        <h1>ค้นหาทรัพย์สิน</h1>
+
+        <div id="inline-filters-container"></div>
+
+        <div class="asset-grid-wrapper">
+            <div id="asset-card-container">
+                <p style="text-align: center; grid-column: 1 / -1; padding: 50px; font-size: 1.2em; color: #777;">พิมพ์คำค้นหาเพื่อเริ่ม</p>
+            </div>
+            <div id="pagination-container"></div>
+        </div>
+    </main>
+
+    <div class="bottom-nav-bar">
+        <a href="/" class="nav-item">
+            <span class="icon">🏠</span>
+            <span class="label">หน้าหลัก</span>
+        </a>
+        <a href="/search" class="nav-item active">
+            <span class="icon">🔍</span>
+            <span class="label">ค้นหา</span>
+        </a>
+        <a href="/chat" class="nav-item">
+            <span class="icon">💬</span>
+            <span class="label">ตอบแชท</span>
+        </a>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    crossorigin=""></script>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

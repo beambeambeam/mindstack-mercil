@@ -78,13 +78,23 @@ async def parse_query_to_json(query_text: str) -> dict[str, Any]:
             ollama_response = response.json()
             json_string = ollama_response.get("response", "{}")
 
-            parsed_data = json.loads(json_string)
+            try:
+                parsed_data = json.loads(json_string)
+            except json.JSONDecodeError as e:
+                logger.error(
+                    f"Error parsing Ollama JSON response: {e}. "
+                    f"Response: {json_string[:200]}"
+                )
+                return default_response
 
             final_data = default_response.copy()
             final_data.update({k: v for k, v in parsed_data.items() if v is not None})
 
             return final_data
 
-    except (httpx.RequestError, json.JSONDecodeError) as e:
-        logger.error(f"Error calling Ollama parser: {e}")
+    except httpx.RequestError as e:
+        logger.error(f"Error calling Ollama parser (RequestError): {e}")
+        return default_response
+    except Exception as e:
+        logger.error(f"Unexpected error in Ollama parser: {type(e).__name__}: {e}")
         return default_response

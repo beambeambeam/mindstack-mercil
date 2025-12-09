@@ -1,0 +1,53 @@
+---
+globs: **/utils/*.ts
+---
+
+# Utility Functions
+
+## Utility Patterns
+
+Utilities are pure functions with no side effects. See [src/utils/format.ts](mdc:apps/web/src/utils/format.ts) and [src/utils/filters.ts](mdc:apps/web/src/utils/filters.ts).
+
+### Formatting Functions
+
+- Use `Intl` APIs for locale-specific formatting
+- Handle null/undefined gracefully
+- Return sensible defaults (e.g., "N/A" for missing data)
+
+Example from [src/utils/format.ts](mdc:apps/web/src/utils/format.ts):
+
+```typescript
+export function formatPrice(price: number | string | null | undefined): string {
+  if (price === null || price === undefined) return "N/A";
+  const numPrice = typeof price === "string" ? parseFloat(price) : price;
+  if (Number.isNaN(numPrice)) return "N/A";
+  return new Intl.NumberFormat("th-TH", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(numPrice);
+}
+```
+
+### Filter/Parser Functions
+
+- Parse user input into structured data
+- Use regex for pattern matching
+- Return typed objects matching interfaces
+- Handle edge cases and malformed input
+
+### Data Transformation
+
+- Extract unique values from arrays
+- Transform data structures
+- Use Map/Set for efficient lookups
+- Return new arrays/objects, don't mutate inputs
+
+## Utility Guidelines
+
+- Keep functions pure (no side effects)
+- Type all parameters and return values
+- Handle edge cases (null, undefined, empty arrays)
+- Use descriptive function names
+- One function per concern
+- Export individual functions

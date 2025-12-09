@@ -1,0 +1,75 @@
+---
+globs: **/components/*.ts
+---
+
+# Component Patterns
+
+## Component Structure
+
+Components are pure functions that manipulate the DOM. They follow these patterns:
+
+1. **Render functions**: Functions that take data and render HTML into a container
+2. **Init functions**: Functions that set up event listeners and initial state
+3. **Export pattern**: Export functions, not classes or objects
+
+## Component Examples
+
+### Render Component
+
+See [src/components/AssetCard.ts](mdc:apps/web/src/components/AssetCard.ts):
+
+```typescript
+export function renderAssetCards(
+  properties: Asset[],
+  assetTypes: AssetType[],
+  container: HTMLElement,
+): void {
+  container.innerHTML = "";
+  // Render logic here
+}
+```
+
+### Init Component
+
+See [src/components/Header.ts](mdc:apps/web/src/components/Header.ts):
+
+```typescript
+export function initHeader(): void {
+  const filterLinks = document.querySelectorAll<HTMLAnchorElement>(
+    ".asset-filter-nav .nav-link",
+  );
+  filterLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      // Event handling
+    });
+  });
+}
+```
+
+## DOM Manipulation
+
+- Use `querySelector`/`querySelectorAll` with type assertions: `document.querySelector<HTMLInputElement>("#input")`
+- Check for null before using elements: `if (!container) return;`
+- Use `innerHTML` for rendering HTML (sanitize if user input)
+- Use CSS modules for styling: `import styles from "../styles/modules/header.module.css"`
+- Apply CSS module classes: `class="${styles.navLink}"`
+
+## Event Handling
+
+- Use `addEventListener` instead of inline handlers
+- Prevent default when needed: `e.preventDefault()`
+- Use typed event handlers: `(e: MouseEvent) => {}`
+- Clean up event listeners if components are destroyed
+
+## State Management
+
+- Keep component state local (module-level variables if needed)
+- Pass data as function parameters
+- Avoid global state unless necessary
+
+## CSS Modules
+
+- Import CSS modules: `import headerStyles from "../styles/modules/header.module.css"`
+- Use camelCase class names in CSS modules
+- Reference classes: `headerStyles.navLink`
+- Combine classes: `${headerStyles.navLink} ${headerStyles.active}`

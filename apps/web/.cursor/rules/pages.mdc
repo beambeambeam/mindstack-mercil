@@ -1,0 +1,81 @@
+---
+globs: **/pages/**/*.ts,src/pages/*.ts
+---
+
+# Page Initialization Patterns
+
+## Page Structure
+
+Each page follows this pattern:
+
+1. **Entry point**: `pages/{page}/index.ts` exports `init()` function
+2. **Shared logic**: `src/pages/{page}.ts` contains reusable page logic
+3. **Initialization**: Called from [src/main.ts](mdc:apps/web/src/main.ts) based on URL path
+
+## Init Function Pattern
+
+See [pages/index/index.ts](mdc:apps/web/pages/index/index.ts):
+
+```typescript
+let allAssets: Asset[] = [];
+let assetTypes: AssetType[] = [];
+
+export async function init() {
+  const container = document.getElementById("asset-card-container");
+  if (!container) return;
+
+  try {
+    // Load data
+    const [assetsResponse, typesResponse] = await Promise.all([
+      getAllAssets(1, 200),
+      getAssetTypes(),
+    ]);
+    
+    allAssets = assetsResponse.items;
+    assetTypes = typesResponse;
+    
+    // Render initial state
+    renderAssetCards(allAssets, assetTypesForDisplay, container);
+    
+    // Set up event handlers
+    renderFilterNavigation(assetTypes, (assetType) => {
+      // Filter logic
+    });
+  } catch (error) {
+    console.error("Error loading assets:", error);
+    // Show error UI
+  }
+}
+```
+
+## Page State Management
+
+- Use module-level variables for page state: `let allAssets: Asset[] = [];`
+- Initialize state in `init()` function
+- Update state when user interacts (filters, search, etc.)
+- Re-render UI when state changes
+
+## Error Handling
+
+- Wrap async operations in try/catch
+- Show user-friendly error messages in Thai
+- Include API URL in error messages for debugging
+- Provide fallback UI when data fails to load
+
+## Event Setup
+
+- Set up event listeners in `init()` function
+- Use `addEventListener` for DOM events
+- Handle Enter key for search inputs
+- Clean up listeners if page is destroyed (rare in SPA)
+
+## Loading States
+
+- Show loading message while fetching: `container.innerHTML = '<p>กำลังโหลด...</p>'`
+- Replace with content or error message after load
+- Use Thai language for user-facing messages
+
+## Examples
+
+- Index page: [pages/index/index.ts](mdc:apps/web/pages/index/index.ts)
+- Search page: [src/pages/search.ts](mdc:apps/web/src/pages/search.ts)

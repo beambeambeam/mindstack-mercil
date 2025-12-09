@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+---
+
+# Project Structure
+
+## Directory Organization
+
+The web app follows this structure:
+
+```
+apps/web/
+├── pages/           # Page-specific entry points (HTML + TS)
+│   ├── index/
+│   ├── search/
+│   ├── chat/
+│   └── detail/
+├── src/
+│   ├── components/  # Reusable UI components
+│   ├── pages/       # Page initialization logic
+│   ├── services/    # API and business logic
+│   ├── types/       # TypeScript type definitions
+│   ├── utils/       # Utility functions
+│   └── styles/      # CSS modules and global styles
+├── public/          # Static assets
+└── dist/            # Build output (gitignored)
+```
+
+## Entry Points
+
+- Main entry: [src/main.ts](mdc:apps/web/src/main.ts) - Routes to page-specific init functions
+- Page entries: Each page in `pages/*/index.ts` exports an `init()` function
+- Build config: [vite.config.ts](mdc:apps/web/vite.config.ts) defines multi-page build
+
+## Import Paths
+
+- Use relative imports: `../components/AssetCard`
+- Import from `src/` when in `pages/` directory: `../../src/services/api`
+- Import types: `import type { Asset } from "../types/asset"`
+- Import CSS modules: `import styles from "../styles/modules/header.module.css"`
+
+## File Naming
+
+- Components: PascalCase (e.g., `AssetCard.ts`)
+- Services/Utils: camelCase (e.g., `api.ts`, `format.ts`)
+- Types: camelCase (e.g., `asset.ts`)
+- CSS modules: camelCase with `.module.css` suffix
+
+## Page Structure
+
+Each page follows this pattern:
+1. HTML file in `pages/{page}/index.html`
+2. TypeScript init in `pages/{page}/index.ts` with `export async function init()`
+3. Page-specific CSS in `pages/{page}/index.css`
+4. Page logic can also be in `src/pages/{page}.ts` for shared code

@@ -6,11 +6,12 @@ from sqlmodel import Session, select
 
 from app.core.config.logging import get_logger
 from app.db import get_session
-from app.models.asset import Asset
+from app.models.asset import Asset, AssetType
 from app.schemas.asset import (
     AssetCreate,
     AssetListResponse,
     AssetResponse,
+    AssetTypeListResponse,
     AssetUpdate,
 )
 from app.services.ingest_service import build_doc, embed_record
@@ -38,6 +39,15 @@ def list_assets(
     items = session.exec(stmt).all()
     total = session.exec(select(func.count()).select_from(Asset)).one()
     return AssetListResponse(items=items, total=total)
+
+
+@router.get("/asset-types", response_model=AssetTypeListResponse)
+def list_asset_types(
+    session: Session = Depends(get_session),
+) -> AssetTypeListResponse:
+    stmt = select(AssetType)
+    items = session.exec(stmt).all()
+    return AssetTypeListResponse(items=items)
 
 
 @router.get("/{asset_id}", response_model=AssetResponse)

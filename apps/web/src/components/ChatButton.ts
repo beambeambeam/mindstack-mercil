@@ -1,0 +1,22 @@
+export function initChatButton(): void {
+	const path = window.location.pathname;
+
+	if (path.includes("/chat/ai")) {
+		return;
+	}
+
+	const existingButton = document.getElementById("floating-chat-button");
+	if (existingButton) return;
+
+	const button = document.createElement("a");
+	button.id = "floating-chat-button";
+	button.href = "/chat/ai";
+	button.className = "floating-chat-button";
+	button.innerHTML = "💬";
+	button.setAttribute("aria-label", "ไปยังหน้าแชท");
+
+	// Let the default link behavior handle navigation (full page reload)
+	// This ensures the correct HTML page is loaded
+
+	document.body.appendChild(button);
+}
