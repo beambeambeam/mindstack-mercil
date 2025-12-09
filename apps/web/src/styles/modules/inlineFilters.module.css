@@ -1,70 +1,93 @@
 .filterForm {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-	gap: 20px;
-	padding: 30px;
-	background-color: #f9f9f9;
-	border-radius: 8px;
+	grid-template-columns: repeat(12, minmax(0, 1fr));
+	gap: 24px;
+	padding: 32px;
+	background-color: white;
+	border-radius: 12px;
 	margin-bottom: 30px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+	width: 100%;
+	max-width: 100%;
+	box-sizing: border-box;
+	overflow: hidden;
 }
 
 .filterSection {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 12px;
+	min-width: 0;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .filterLabel {
-	font-size: 1em;
-	font-weight: bold;
+	font-size: 0.95em;
+	font-weight: 600;
 	color: #333;
-	margin-bottom: 5px;
+	margin-bottom: 0;
 }
 
 .filterOptions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: 8px;
+	width: 100%;
 }
 
 .filterOption {
-	padding: 8px 16px;
-	border: 2px solid #ddd;
-	border-radius: 6px;
+	padding: 10px 18px;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
 	background-color: white;
 	color: #555;
 	cursor: pointer;
 	font-size: 0.9em;
-	transition: all 0.2s;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+	box-sizing: border-box;
 }
 
 .filterOption:hover {
 	border-color: #007bff;
 	color: #007bff;
+	background-color: #f0f7ff;
 }
 
 .filterOptionActive {
 	background-color: #007bff;
 	color: white;
 	border-color: #007bff;
-	font-weight: bold;
+	font-weight: 600;
+}
+
+.filterOptionActive:hover {
+	background-color: #0056b3;
+	border-color: #0056b3;
+	color: white;
 }
 
 .priceInputs {
 	display: flex;
-	gap: 10px;
+	gap: 12px;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .priceInput,
 .numberInput,
 .textInput {
-	padding: 10px 15px;
-	border: 2px solid #ddd;
-	border-radius: 6px;
-	font-size: 1em;
+	padding: 12px 16px;
+	border: 2px solid #e0e0e0;
+	border-radius: 8px;
+	font-size: 0.95em;
 	width: 100%;
-	transition: border-color 0.2s;
+	min-width: 0;
+	transition: all 0.2s ease;
 	background-color: white;
+	color: #333;
+	box-sizing: border-box;
 }
 
 .priceInput:focus,
@@ -72,64 +95,117 @@
 .textInput:focus {
 	outline: none;
 	border-color: #007bff;
+	box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
 .priceInputs .priceInput {
 	flex: 1;
+	min-width: 0;
 }
 
 .searchButtonSection {
 	display: flex;
 	justify-content: flex-end;
-	margin-top: 10px;
+	align-items: flex-end;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .searchButton {
-	padding: 12px 30px;
+	padding: 14px 32px;
 	background-color: #007bff;
 	color: white;
 	border: none;
-	border-radius: 6px;
+	border-radius: 8px;
 	font-size: 1em;
-	font-weight: bold;
+	font-weight: 600;
 	cursor: pointer;
-	transition: background-color 0.2s;
+	transition: all 0.2s ease;
+	min-width: 120px;
+	box-sizing: border-box;
 }
 
 .searchButton:hover {
 	background-color: #0056b3;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
 }
 
 .searchButton:active {
 	background-color: #004085;
+	transform: translateY(0);
+}
+
+@media (max-width: 1024px) {
+	.filterForm {
+		grid-template-columns: repeat(6, 1fr);
+		gap: 20px;
+		padding: 24px;
+		max-width: 100%;
+	}
 }
 
 @media (max-width: 768px) {
 	.filterForm {
 		grid-template-columns: 1fr;
 		padding: 20px;
-		gap: 15px;
+		gap: 20px;
+		max-width: 100%;
+	}
+
+	.filterSection {
+		width: 100%;
+	}
+
+	.filterLabel {
+		font-size: 0.9em;
 	}
 
 	.filterOptions {
 		gap: 8px;
+		width: 100%;
 	}
 
 	.filterOption {
-		padding: 6px 12px;
+		padding: 8px 14px;
 		font-size: 0.85em;
 	}
 
 	.priceInputs {
 		flex-direction: column;
-		gap: 10px;
+		gap: 12px;
+		width: 100%;
+	}
+
+	.priceInput,
+	.numberInput,
+	.textInput {
+		padding: 10px 14px;
+		font-size: 0.9em;
+		width: 100%;
+		min-width: 0;
 	}
 
 	.searchButtonSection {
 		justify-content: stretch;
+		margin-top: 8px;
+		width: 100%;
 	}
 
 	.searchButton {
 		width: 100%;
+		padding: 12px 24px;
+	}
+}
+
+@media (max-width: 480px) {
+	.filterForm {
+		padding: 16px;
+		gap: 16px;
+	}
+
+	.filterOption {
+		padding: 8px 12px;
+		font-size: 0.8em;
 	}
 }

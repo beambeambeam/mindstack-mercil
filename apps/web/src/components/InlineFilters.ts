@@ -33,7 +33,7 @@ export function createInlineFilters(
 
 	const queryTextSection = document.createElement("div");
 	queryTextSection.className = inlineFilterStyles.filterSection;
-	queryTextSection.style.gridColumn = "1 / -1";
+	queryTextSection.style.gridColumn = "span 12";
 
 	const queryTextLabel = document.createElement("label");
 	queryTextLabel.className = inlineFilterStyles.filterLabel;
@@ -56,7 +56,7 @@ export function createInlineFilters(
 
 	const propertyTypeSection = document.createElement("div");
 	propertyTypeSection.className = inlineFilterStyles.filterSection;
-	propertyTypeSection.style.gridColumn = "1 / -1";
+	propertyTypeSection.style.gridColumn = "span 12";
 
 	const propertyTypeLabel = document.createElement("label");
 	propertyTypeLabel.className = inlineFilterStyles.filterLabel;
@@ -113,6 +113,7 @@ export function createInlineFilters(
 
 	const priceSection = document.createElement("div");
 	priceSection.className = inlineFilterStyles.filterSection;
+	priceSection.style.gridColumn = "span 6";
 
 	const priceLabel = document.createElement("label");
 	priceLabel.className = inlineFilterStyles.filterLabel;
@@ -152,7 +153,8 @@ export function createInlineFilters(
 	filterForm.appendChild(priceSection);
 
 	const bedroomsSection = document.createElement("div");
-	bedroomsSection.className = inlineFilterStyles.filterSection;
+	bedroomsSection.className = `${inlineFilterStyles.filterSection} bedroomsSection`;
+	bedroomsSection.style.gridColumn = "span 3";
 
 	const bedroomsLabel = document.createElement("label");
 	bedroomsLabel.className = inlineFilterStyles.filterLabel;
@@ -177,7 +179,8 @@ export function createInlineFilters(
 	filterForm.appendChild(bedroomsSection);
 
 	const bathroomsSection = document.createElement("div");
-	bathroomsSection.className = inlineFilterStyles.filterSection;
+	bathroomsSection.className = `${inlineFilterStyles.filterSection} bathroomsSection`;
+	bathroomsSection.style.gridColumn = "span 3";
 
 	const bathroomsLabel = document.createElement("label");
 	bathroomsLabel.className = inlineFilterStyles.filterLabel;
@@ -203,7 +206,7 @@ export function createInlineFilters(
 
 	const searchButtonSection = document.createElement("div");
 	searchButtonSection.className = inlineFilterStyles.searchButtonSection;
-	searchButtonSection.style.gridColumn = "1 / -1";
+	searchButtonSection.style.gridColumn = "span 12";
 
 	const searchButton = document.createElement("button");
 	searchButton.type = "button";
