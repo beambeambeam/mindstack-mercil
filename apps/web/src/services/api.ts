@@ -2,6 +2,8 @@ import { env } from "../env";
 import type {
 	Asset,
 	AssetListResponse,
+	AssetType,
+	AssetTypeListResponse,
 	SearchRequest,
 	SearchResponse,
 } from "../types/asset";
@@ -108,4 +110,25 @@ export async function getAssetByCode(assetCode: string): Promise<Asset> {
 		throw new Error(`Asset with code ${assetCode} not found`);
 	}
 	return asset;
+}
+
+export async function getAssetTypes(): Promise<AssetType[]> {
+	const url = `${API_URL}/assets/asset-types`;
+	console.log(`Fetching asset types from: ${url}`);
+
+	const response = await fetch(url);
+
+	if (!response.ok) {
+		const text = await response.text();
+		console.error(
+			`API Error ${response.status} ${response.statusText} from ${url}`,
+		);
+		console.error("Response:", text.substring(0, 500));
+		throw new Error(
+			`API Error: ${response.status} ${response.statusText}. Check if the API server is running at ${API_URL}`,
+		);
+	}
+
+	const data = await parseJsonResponse<AssetTypeListResponse>(response, url);
+	return data.items;
 }

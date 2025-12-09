@@ -1,7 +1,7 @@
 import { renderAssetCards } from "../components/AssetCard";
-import { setupFilterNavigation } from "../components/Header";
+import { renderFilterNavigation } from "../components/Header";
 import { initMapWithAssets } from "../components/Map";
-import { getAllAssets } from "../services/api";
+import { getAllAssets, getAssetTypes } from "../services/api";
 import type { Asset, AssetType } from "../types/asset";
 import { extractAssetTypes } from "../utils/format";
 
@@ -18,17 +18,23 @@ export async function init(): Promise<void> {
 		container.innerHTML =
 			'<p style="text-align: center; padding: 50px;">กำลังโหลดข้อมูล...</p>';
 
-		const response = await getAllAssets(1, 200);
-		allAssets = response.items;
-		assetTypes = extractAssetTypes(allAssets);
+		const [assetsResponse, typesResponse] = await Promise.all([
+			getAllAssets(1, 200),
+			getAssetTypes(),
+		]);
 
-		renderAssetCards(allAssets, assetTypes, container);
+		allAssets = assetsResponse.items;
+		assetTypes = typesResponse;
+
+		const assetTypesForDisplay = extractAssetTypes(allAssets);
+
+		renderAssetCards(allAssets, assetTypesForDisplay, container);
 
 		if (mapContainer) {
 			initMapWithAssets("map", allAssets);
 		}
 
-		setupFilterNavigation((assetType) => {
+		renderFilterNavigation(assetTypes, (assetType) => {
 			let filteredList: Asset[] = [];
 			if (assetType === "all") {
 				filteredList = allAssets;
@@ -36,7 +42,10 @@ export async function init(): Promise<void> {
 				const typeId = parseInt(assetType, 10);
 				filteredList = allAssets.filter((p) => p.asset_type_id === typeId);
 			}
-			renderAssetCards(filteredList, assetTypes, container);
+			renderAssetCards(filteredList, assetTypesForDisplay, container);
+			if (mapContainer) {
+				initMapWithAssets("map", filteredList);
+			}
 		});
 	} catch (error) {
 		console.error("Error loading assets:", error);

@@ -1,9 +1,9 @@
 import { renderAssetCards } from "../../src/components/AssetCard";
-import { getAllAssets } from "../../src/services/api";
+import { getAllAssets, getAssetTypes } from "../../src/services/api";
 import { getParsedFilters, hybridSearchAPI } from "../../src/services/search";
 import searchStyles from "../../src/styles/modules/search.module.css";
 import type { Asset, AssetType } from "../../src/types/asset";
-import { formatPrice } from "../../src/utils/format";
+import { extractAssetTypes, formatPrice } from "../../src/utils/format";
 import "./index.css";
 
 let allAssets: Asset[] = [];
@@ -24,21 +24,23 @@ async function applySearch() {
 		return;
 	}
 
-	const response = await getAllAssets(1, 200);
-	allAssets = response.items;
-	assetTypes = [
-		{ id: 1, name_th: "ทาวน์เฮ้าส์", name_en: "TOWNHOUSE" },
-		{ id: 2, name_th: "ที่ดินเปล่า", name_en: "LAND" },
-		{ id: 3, name_th: "ห้องชุดพักอาศัย", name_en: "CONDOMINIUM" },
-		{ id: 4, name_th: "บ้านเดี่ยว", name_en: "DETACHED HOUSE" },
-		{ id: 5, name_th: "อาคารพาณิชย์", name_en: "COMMERCIAL BUILDING" },
-		{ id: 15, name_th: "บ้านแฝด", name_en: "SEMI-DETACHED HOUSE" },
-	];
+	try {
+		const [assetsResponse, typesResponse] = await Promise.all([
+			getAllAssets(1, 200),
+			getAssetTypes(),
+		]);
+		allAssets = assetsResponse.items;
+		assetTypes = typesResponse;
+	} catch (error) {
+		console.error("Error loading assets:", error);
+	}
+
+	const assetTypesForDisplay = extractAssetTypes(allAssets);
 
 	latestParsedFilters = getParsedFilters(searchTerm);
 
 	if (!searchTerm) {
-		renderAssetCards(allAssets, assetTypes, container);
+		renderAssetCards(allAssets, assetTypesForDisplay, container);
 		return;
 	}
 
@@ -97,7 +99,8 @@ async function applySearch() {
 		}
 		container.innerHTML = zeroResultHTML;
 	} else {
-		renderAssetCards(results, assetTypes, container);
+		const assetTypesForDisplay = extractAssetTypes(allAssets);
+		renderAssetCards(results, assetTypesForDisplay, container);
 	}
 }
 

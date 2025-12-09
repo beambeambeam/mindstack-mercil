@@ -60,3 +60,7 @@ export interface SearchResponse {
 	results: AssetResult[];
 	total_pages: number;
 }
+
+export interface AssetTypeListResponse {
+	items: AssetType[];
+}

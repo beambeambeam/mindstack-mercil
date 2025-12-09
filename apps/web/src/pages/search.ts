@@ -1,5 +1,5 @@
 import { renderAssetCards } from "../components/AssetCard";
-import { getAllAssets } from "../services/api";
+import { getAllAssets, getAssetTypes } from "../services/api";
 import { getParsedFilters, hybridSearchAPI } from "../services/search";
 import type { Asset, AssetType } from "../types/asset";
 import { extractAssetTypes, formatPrice } from "../utils/format";
@@ -12,9 +12,12 @@ let latestParsedFilters: ReturnType<typeof getParsedFilters> = {
 
 async function loadInitialData(): Promise<void> {
 	try {
-		const response = await getAllAssets(1, 200);
-		allAssets = response.items;
-		assetTypes = extractAssetTypes(allAssets);
+		const [assetsResponse, typesResponse] = await Promise.all([
+			getAllAssets(1, 200),
+			getAssetTypes(),
+		]);
+		allAssets = assetsResponse.items;
+		assetTypes = typesResponse;
 	} catch (error) {
 		console.error("Error loading initial assets:", error);
 	}
@@ -30,7 +33,8 @@ async function applySearch(): Promise<void> {
 	if (!container) return;
 
 	if (!searchTerm) {
-		renderAssetCards(allAssets, assetTypes, container);
+		const assetTypesForDisplay = extractAssetTypes(allAssets);
+		renderAssetCards(allAssets, assetTypesForDisplay, container);
 		return;
 	}
 
@@ -95,7 +99,8 @@ async function applySearch(): Promise<void> {
 
 			container.innerHTML = zeroResultHTML;
 		} else {
-			renderAssetCards(results, assetTypes, container);
+			const assetTypesForDisplay = extractAssetTypes(allAssets);
+			renderAssetCards(results, assetTypesForDisplay, container);
 		}
 	} catch (error) {
 		console.error("Search error:", error);
