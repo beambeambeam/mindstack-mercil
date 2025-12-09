@@ -22,7 +22,7 @@ router = APIRouter(
 
 
 @router.get("", response_model=SearchResponseSchema)
-async def search_assets(
+async def search_assets_get(
     query_text: str = "",
     price_min: int | None = None,
     price_max: int | None = None,
@@ -44,6 +44,23 @@ async def search_assets(
             ),
             pagination=PaginationSchema(page=page, page_size=page_size),
         )
+        results, total_pages = await hybrid_search(request, db)
+        return SearchResponseSchema(results=results, total_pages=total_pages)
+    except RuntimeError as e:
+        logger.error(f"Search service error: {e}")
+        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error in /search: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error in search.")
+
+
+@router.post("", response_model=SearchResponseSchema)
+async def search_assets_post(
+    request: SearchRequestSchema,
+    db: Session = Depends(get_session),
+) -> SearchResponseSchema:
+    """Hybrid search via JSON body."""
+    try:
         results, total_pages = await hybrid_search(request, db)
         return SearchResponseSchema(results=results, total_pages=total_pages)
     except RuntimeError as e:
